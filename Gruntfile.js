@@ -15,10 +15,16 @@ module.exports = function (grunt) {
 
     // Lint Task
     tasks = require(grunt.uriTask + 'jshint.js')(grunt, tasks);
-
+    tasks.ts = {
+      default : {
+        src: ["**/*.ts", "!node_modules/**/*.ts"]
+      }
+    }
     // Register The Tasks
     grunt.registerTask('lint', ['jshint']);
     grunt.registerTask('default', ['lint']);
+    grunt.loadNpmTasks("grunt-ts");
+    grunt.registerTask("default", ["ts"]);
 
     // Initialize The Grunt Configuration
     grunt.initConfig(tasks);

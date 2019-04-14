@@ -1,12 +1,10 @@
-class Block {
+export class Block {
+  x: number;
+  y: number;
+
   constructor(x, y) {
     this.x = x;
     this.y = y;
-  }
-
-  clean() { 
-    this.x = null;
-    this.y = null;
   }
   
   moveBlock(newX, newY) {

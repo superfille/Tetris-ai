@@ -16,6 +16,7 @@ Tetris.Boot.prototype.init = function()
   this.scale.pageAlignHorizontally = true;
   this.scale.pageAlignVertically = true;
   this.stage.forcePortrait = true;
+  
 };
 
 Tetris.Boot.prototype.preload = function()
