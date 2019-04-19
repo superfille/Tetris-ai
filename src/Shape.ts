@@ -1,56 +1,50 @@
-Tetris.Shape = function () {
-  this.type = null;
-  this.orientation = null;
-  this.color = null;
-  
-  this.centerX = null;
-  this.centerY = null;
-  
-  this.shape = null;
-  this.blocks = [];
-  
-  this.isTweening = false;
-  this.tweenCounter = 0;
-  
-  this.tempCounter = 0;
-  this.isFaking = false;
-  this.hasBeenPlaced = false;
-};
+import { ShapeStuff, Directions, Colors, BoardDimension } from './static_numbers';
+import Block from './Block';
+import Board from './Board';
 
-Tetris.Shape.prototype = {
-
-  NUM_BLOCKS_IN_SHAPE: 4,
-  NUM_SHAPE_TYPES: 7,
-  NUM_ORIENTATIONS: 4,
-
-  // Shape type
-  I: 0,
-  J: 1,
-  L: 2,
-  O: 3,
-  S: 4,
-  Z: 5,
-  T: 6,
+export default class Shape {
+  type: number = null;
+  orientation: number = null;
+  color: number = null;
   
-  randomizeShape: function () {
-    
-    this.type = Math.floor(Math.random() * this.NUM_SHAPE_TYPES);
-    this.orientation = Math.floor(Math.random() * this.NUM_ORIENTATIONS);
-    this.color = Math.floor(Math.random() * Tetris.NUM_COLORS);
+  centerX: number = null;
+  centerY: number = null;
+  
+  shape: any = null;
+  blocks: Block[];
+  
+  isTweening = false;
+  tweenCounter = 0;
+  
+  tempCounter = 0;
+  isFaking = false;
+  hasBeenPlaced = false;
+
+  game: Phaser.Game = null;
+  board: Board;
+  shapeTypes: any;
+  
+  constructor(game: Phaser.Game, board: Board, shapeTypes: any) {
+    this.game = game;
+    this.board = board;
+  }
+
+  randomizeShape() {
+    this.type = Math.floor(Math.random() * ShapeStuff.NUM_SHAPE_TYPES);
+    this.orientation = Math.floor(Math.random() * ShapeStuff.NUM_ORIENTATIONS);
+    this.color = Math.floor(Math.random() * Colors.NUM_COLORS);
     
     this.initBlocks();
-  },
+  }
   
-  initBlocks: function () {
-    
-    var i;
-    for(i = 0; i < this.NUM_BLOCKS_IN_SHAPE; i++) {
-      this.blocks[i] = new Tetris.Block();
+  initBlocks() {
+    for(let i = 0; i < ShapeStuff.NUM_BLOCKS_IN_SHAPE; i++) {
+      this.blocks[i] = new Block(this.game);
     }
-  },
+  }
 
-  activate: function () {
-    this.shape = Tetris.shapes[this.type];
+  activate() {
+    this.shape = this.shapeTypes[this.type];
     this.centerX = this.shape.orientation[this.orientation].startingLocation.x;
     this.centerY = this.shape.orientation[this.orientation].startingLocation.y;
     
@@ -61,10 +55,9 @@ Tetris.Shape.prototype = {
       newY = this.centerY + this.shape.orientation[this.orientation].blockPosition[i].y;
       this.blocks[i].makeBlock(newX, newY, this.color);
     }
-  },
+  }
   
-  clearActive: function () {
-    
+  clearActive() {
     this.type = null;
     this.orientation = null;
     this.color = null;
@@ -73,54 +66,54 @@ Tetris.Shape.prototype = {
     this.centerY = null;
 
     this.blocks = null;
-  },
+  }
   
-  placeShapeInBoard: function (board) {
+  placeShapeInBoard(board: Board) {
     if (board) {
-      this.blocks.forEach(block => board[block.y][block.x] = block);
+      this.blocks.forEach(block => board.board[block.y][block.x] = block);
     } else {
-      this.blocks.forEach(block => Tetris.board[block.y][block.x] = block);
+      this.blocks.forEach(block => this.board.board[block.y][block.x] = block);
     }
-  },
+  }
 
-  removeShapeInBoard: function(board) {
-    this.blocks.forEach(block => board[block.y][block.x] = null);
-  },
+  removeShapeInBoard(board: Board) {
+    this.blocks.forEach(block => board.board[block.y][block.x] = null);
+  }
 
-  autoDrop: function() {
-    while(this.canMoveShape(Tetris.DOWN)) {
-      this.moveShape(Tetris.DOWN);
+  autoDrop() {
+    while(this.canMoveShape(Directions.DOWN)) {
+      this.moveShape(Directions.DOWN);
     }
     this.hasBeenPlaced = true;
-  },
+  }
   
-  isOnBoard: function (x, y) {
+  isOnBoard(x: number, y: number): boolean {
     return x >= 0 && y >= 0 && 
-       x < Tetris.BOARD_WIDTH && y < Tetris.BOARD_HEIGHT
-  },
+       x < BoardDimension.BOARD_WIDTH && y < BoardDimension.BOARD_HEIGHT
+  }
   
-  isOccupied: function (x, y) {
-    return Tetris.board[y][x] !== null;
-  },
+  isOccupied(x: number, y: number): boolean {
+    return this.board.board[y][x] !== null;
+  }
   
-  canMoveShape: function (direction) {
+  canMoveShape(direction: Directions): boolean {
     let i, newX, newY;
 
     for(i = 0; i < this.blocks.length; i++) {
       switch(direction) {
-        case Tetris.CURRENT:
+        case Directions.CURRENT:
           newX = this.blocks[i].x;
           newY = this.blocks[i].y;
           break;
-        case Tetris.DOWN:
+        case Directions.DOWN:
           newX = this.blocks[i].x;
           newY = this.blocks[i].y + 1;
           break;
-        case Tetris.LEFT:
+        case Directions.LEFT:
           newX = this.blocks[i].x - 1;
           newY = this.blocks[i].y;
           break;
-        case Tetris.RIGHT:
+        case Directions.RIGHT:
           newX = this.blocks[i].x + 1;
           newY = this.blocks[i].y;
           break;
@@ -130,9 +123,9 @@ Tetris.Shape.prototype = {
       }
     }
     return true;
-  },
+  }
 
-  moveShape: function (direction, throwError = true, tween = true) {
+  moveShape(direction: Directions, throwError = true, tween = true) {
     if(!this.canMoveShape(direction)){
       if (throwError) {
         console.log('cant move')
@@ -142,7 +135,7 @@ Tetris.Shape.prototype = {
       }
     }
 
-    if(direction === Tetris.CURRENT) {
+    if(direction === Directions.CURRENT) {
       return true;
     }
 
@@ -151,15 +144,15 @@ Tetris.Shape.prototype = {
     // Move the Shape's blocks
     for(i = 0; i < this.blocks.length; i++) {
       switch(direction) {
-        case Tetris.DOWN:
+        case Directions.DOWN:
           newX = this.blocks[i].x;
           newY = this.blocks[i].y + 1;
           break;
-        case Tetris.LEFT:
+        case Directions.LEFT:
           newX = this.blocks[i].x - 1;
           newY = this.blocks[i].y;
           break;
-        case Tetris.RIGHT:
+        case Directions.RIGHT:
           newX = this.blocks[i].x + 1;
           newY = this.blocks[i].y;
           break;
@@ -169,31 +162,31 @@ Tetris.Shape.prototype = {
     
     // Update the Shape's center
     switch(direction) {
-      case Tetris.DOWN:
+      case Directions.DOWN:
         this.centerX += 0;
         this.centerY += 1;
         break;
-      case Tetris.LEFT:
+      case Directions.LEFT:
         this.centerX += -1;
         this.centerY += 0;
         break;
-      case Tetris.RIGHT:
+      case Directions.RIGHT:
         this.centerX += 1;
         this.centerY += 0;
         break;
     }
 
     return true;
-  },
+  }
   
-  canRotate: function () {
+  canRotate() {
     
     if (this.isTweening) {
       return false;
     }
     
     var i, newX, newY, newOrientation;
-    newOrientation = (this.orientation + 1) % this.NUM_ORIENTATIONS;
+    newOrientation = (this.orientation + 1) % ShapeStuff.NUM_ORIENTATIONS;
     
     for(i = 0; i < this.blocks.length; i++) {
       newX = this.centerX + this.shape.orientation[newOrientation].blockPosition[i].x;
@@ -204,9 +197,9 @@ Tetris.Shape.prototype = {
       }
     }
     return true;
-  },
+  }
     
-  rotate: function (throwError = true, tween = true) {
+  rotate(throwError = true, tween = true) {
     if(!this.canRotate()) {
       if(throwError) {
         throw "Cannot rotate active shape";
@@ -215,7 +208,7 @@ Tetris.Shape.prototype = {
     }
     
     var i, newX, newY, newOrientation;
-    newOrientation = (this.orientation + 1) % this.NUM_ORIENTATIONS;
+    newOrientation = (this.orientation + 1) % ShapeStuff.NUM_ORIENTATIONS;
     for(i = 0; i < this.blocks.length; i++) {
       newX = this.centerX + this.shape.orientation[newOrientation].blockPosition[i].x;
       newY = this.centerY + this.shape.orientation[newOrientation].blockPosition[i].y;      
@@ -227,32 +220,32 @@ Tetris.Shape.prototype = {
       this.isTweening = true;
     }
     return true;
-  },
+  }
   
-  updateTween: function () {
+  updateTween() {
     
     if (this.tweenCounter > 10) {
       this.isTweening = false;
       this.tweenCounter = 0;
     } 
     this.tweenCounter++;
-  },
+  }
 
-  preview: function() {
+  preview() {
 
-  },
+  }
 
-  clearPreview: function() {
-  },
+  clearPreview() {
+  }
 
-  clone: function() {
-    const newShape = new Tetris.Shape();
+  clone() {
+    const newShape = new Shape(this.game, this.board, this.shapeTypes);
     newShape.type = this.type;
     newShape.orientation = this.orientation;
     newShape.color = this.color;
     newShape.centerX = this.centerX;
     newShape.centerY = this.centerY;
-    newShape.shape = Tetris.shapes[this.type];
+    newShape.shape = this.shapeTypes[this.type];
     newShape.initBlocks();
     
     for(let i = 0; i < this.blocks.length; i++) {
@@ -261,9 +254,9 @@ Tetris.Shape.prototype = {
     }
 
     return newShape;
-  },
+  }
 
-  addMove: function(blocks) {
+  addMove(blocks: Block[]) {
     for(let i = 0; i < this.blocks.length; i++) {
       this.blocks[i].x = blocks[i].x;
       this.blocks[i].y = blocks[i].y;

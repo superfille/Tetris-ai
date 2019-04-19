@@ -1,12 +1,6 @@
 import { Board } from "./Board";
 import { Shape } from "./Shape";
-
-export enum Direction {
-  DOWN,
-  LEFT,
-  RIGHT,
-  CURRENT,
-}
+import { Directions } from "../../static_numbers";
 
 export class TetrisGame {
   shapes: [];
@@ -16,7 +10,7 @@ export class TetrisGame {
   activeShape: Shape;
   isGameOver: boolean;
 
-  constructor(game) {
+  constructor(game: Phaser.Game) {
       this.board = new Board(true);
       this.shapesQueue = [];
       this.score = 0;
@@ -85,12 +79,12 @@ export class TetrisGame {
     this.shapesQueue.shift();
     this.shapesQueue.push(newShape);
     this.activeShape = this.shapesQueue[0];
-    if (!this.board.canMoveShape(this.activeShape.blocks, Direction.CURRENT)) {
+    if (!this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT)) {
       this.isGameOver = true;
     }
   }
 
-  calculateScore(rowsCleared, level = 0) {
+  calculateScore(rowsCleared: number, level = 0) {
     if (rowsCleared === 1) {
       this.score += 40 * (level + 1);
     } else if (rowsCleared === 2) {

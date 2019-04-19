@@ -1,9 +1,8 @@
 import { Block } from "./Block";
 import { Shape } from "./Shape";
+import { BoardDimension, Directions } from '../../static_numbers';
 
 export class Board {
-  BOARD_HEIGHT: 10;
-  BOARD_WIDTH: 16;
   board: Block[][];
   constructor(init = false) {
     this.board = null;
@@ -14,15 +13,15 @@ export class Board {
 
   init() {
     // Creates [][] array of nulls
-    this.board = Array.from({length: this.BOARD_HEIGHT},
-        () => Array(Tetris.BOARD_WIDTH).fill(null))
+    this.board = Array.from({length: BoardDimension.BOARD_HEIGHT},
+        () => Array(BoardDimension.BOARD_WIDTH).fill(null))
   }
     
   clone() {
-    const newBoard = Array(Tetris.BOARD_HEIGHT);
+    const newBoard = Array(BoardDimension.BOARD_HEIGHT);
     
-    for (let i = 0; i < Tetris.BOARD_HEIGHT; i++) {
-      for (let j = 0; j < Tetris.BOARD_WIDTH; j++) {
+    for (let i = 0; i < BoardDimension.BOARD_HEIGHT; i++) {
+      for (let j = 0; j < BoardDimension.BOARD_WIDTH; j++) {
         newBoard[i][j] = this.board[i][j] !== null ? `${i} ${j}` : null;
       }
     }
@@ -30,39 +29,39 @@ export class Board {
     return newBoard;
   }
 
-  placeShapeInBoard(shape) {
+  placeShapeInBoard(shape: Shape) {
     shape.blocks.forEach(block => this.board[block.y][block.x] = block);
   }
 
-  removeShapeInBoard(blocks) {
+  removeShapeInBoard(blocks: Block[]) {
     blocks.forEach(block => this.board[block.y][block.x] = null);
   }
 
-  isOnBoard(position) {
+  isOnBoard(position: { x: number, y: number }) {
     return position.x >= 0 &&
           position.y >= 0 && 
-          position.x < this.BOARD_WIDTH &&
-          position.y < this.BOARD_HEIGHT  
+          position.x < BoardDimension.BOARD_WIDTH &&
+          position.y < BoardDimension.BOARD_HEIGHT  
   }
   
   isOccupied(position: {x: number, y: number }): boolean {
     return this.board[position.y][position.x] !== null; 
   }
 
-  moveLogic(block, direction): {x: number, y: number} {
+  moveLogic(block: Block, direction: Directions): {x: number, y: number} {
     switch(direction) {
-      case Tetris.CURRENT:
+      case Directions.CURRENT:
         return { x: block.x, y: block.y };
-      case Tetris.DOWN:
+      case Directions.DOWN:
         return { x: block.x, y: block.y + 1 };
-      case Tetris.LEFT:
+      case Directions.LEFT:
         return { x: block.x - 1, y: block.y };
-      case Tetris.RIGHT:
+      case Directions.RIGHT:
         return { x: block.x + 1, y: block.y };
     }  
   }
 
-  canMoveShape(blocks: Block[], direction): boolean {
+  canMoveShape(blocks: Block[], direction: Directions): boolean {
     return blocks.every(block => {
       const position = this.moveLogic(block, direction);
       return this.isOnBoard(position) && !this.isOccupied(position)
@@ -70,7 +69,7 @@ export class Board {
   }
 
   getCompleteRows(): number[] {
-    const result = [];
+    const result: number[] = [];
     
     this.board.forEach((_, index) => {
       if (this.isRowFull(index)) {
@@ -81,11 +80,11 @@ export class Board {
     return result;
   }
 
-  isRowFull(row): boolean {
+  isRowFull(row: number): boolean {
     return this.board[row].every(column => column !== null);
   }
 
-  clearRows(completedRows) {
+  clearRows(completedRows: number[]) {
     let alreadyShifted = 0;
 
     for (let i = completedRows.length - 1; i >= 0; i--) {
@@ -100,7 +99,7 @@ export class Board {
     }
   }
 
-  dropRowsAbove(row) {
+  dropRowsAbove(row: number) {
     for (let i = row; i >= 0; i--) {
       for (let j = 0; j < this.board[i].length; j++) {
         let block = this.board[i][j];

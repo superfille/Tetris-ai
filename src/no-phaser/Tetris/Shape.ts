@@ -1,42 +1,28 @@
 import { Block } from "./Block";
 import { Board } from "./Board";
-import { Direction } from "./TetrisGame";
-
-enum ShapeType {
-  I,
-  J,
-  L,
-  O,
-  S,
-  Z,
-  T
-}
+import { ShapeStuff, Directions } from '../../static_numbers';
 
 export class Shape {
-  NUM_BLOCKS_IN_SHAPE = 4;
-  NUM_SHAPE_TYPES = 7;
-  NUM_ORIENTATIONS = 4;
-
   centerX: number;
   centerY: number;
-  tetrisShape: Shape;
+  tetrisShape: any;
   type: number;
   orientation: number;
   blocks: Block[];
   board: Board;
 
 
-  constructor(board) {
+  constructor(board: Board) {
     this.centerX = null;
     this.centerY = null;
     this.tetrisShape = null;
     this.blocks = [];
-    this.type = Math.floor(Math.random() * this.NUM_SHAPE_TYPES);
-    this.orientation = Math.floor(Math.random() * this.NUM_ORIENTATIONS);
+    this.type = Math.floor(Math.random() * ShapeStuff.NUM_SHAPE_TYPES);
+    this.orientation = Math.floor(Math.random() * ShapeStuff.NUM_ORIENTATIONS);
     this.board = board;
   }
   
-  init(shapes) {
+  init(shapes: any) {
     this.tetrisShape = shapes[this.type];
     this.centerX = this.tetrisShape.orientation[this.orientation].startingLocation.x;
     this.centerY = this.tetrisShape.orientation[this.orientation].startingLocation.y;
@@ -49,18 +35,18 @@ export class Shape {
   }
   
   autoDrop() {
-    while(this.board.canMoveShape(this.blocks, Direction.DOWN)) {
-      this.moveShape(Direction.DOWN);
+    while(this.board.canMoveShape(this.blocks, Directions.DOWN)) {
+      this.moveShape(Directions.DOWN);
     }
   }
   
-  moveShape(direction: Direction): boolean {
+  moveShape(direction: Directions): boolean {
     if(!this.board.canMoveShape(this.blocks, direction)){
       console.log('Cant move', this.blocks, this.board);
       return false;
     }
 
-    if(direction === Direction.CURRENT) {
+    if(direction === Directions.CURRENT) {
       return true;
     }
 
@@ -69,15 +55,15 @@ export class Shape {
     // Move the Shape's blocks
     for(let i = 0; i < this.blocks.length; i++) {
       switch(direction) {
-        case Direction.DOWN:
+        case Directions.DOWN:
           newX = this.blocks[i].x;
           newY = this.blocks[i].y + 1;
           break;
-        case Direction.LEFT:
+        case Directions.LEFT:
           newX = this.blocks[i].x - 1;
           newY = this.blocks[i].y;
           break;
-        case Direction.RIGHT:
+        case Directions.RIGHT:
           newX = this.blocks[i].x + 1;
           newY = this.blocks[i].y;
           break;
@@ -87,15 +73,15 @@ export class Shape {
     
     // Update the this.Shape's center
     switch(direction) {
-      case Direction.DOWN:
+      case Directions.DOWN:
         this.centerX += 0;
         this.centerY += 1;
         break;
-      case Direction.LEFT:
+      case Directions.LEFT:
         this.centerX += -1;
         this.centerY += 0;
         break;
-      case Direction.RIGHT:
+      case Directions.RIGHT:
         this.centerX += 1;
         this.centerY += 0;
         break;
@@ -105,7 +91,7 @@ export class Shape {
   }
 
   canRotate() {
-    const newOrientation = (this.orientation + 1) % this.NUM_ORIENTATIONS;
+    const newOrientation = (this.orientation + 1) % ShapeStuff.NUM_ORIENTATIONS;
     
     return this.blocks.every((_, i) => {
       const newX = this.centerX +
@@ -123,7 +109,7 @@ export class Shape {
       return false;
     }
     
-    const newOrientation = (this.orientation + 1) % this.NUM_ORIENTATIONS;
+    const newOrientation = (this.orientation + 1) % ShapeStuff.NUM_ORIENTATIONS;
     this.blocks.forEach((block, i) => {
       const newX = this.centerX + this.tetrisShape.orientation[newOrientation].blockPosition[i].x;
       const newY = this.centerY + this.tetrisShape.orientation[newOrientation].blockPosition[i].y;      
@@ -151,7 +137,7 @@ export class Shape {
     return newShape;
   }
 
-  addMove(blocks) {
+  addMove(blocks: Block[]) {
     this.blocks.forEach((block, i) => {
       block.x = blocks[i].x;
       block.y = blocks[i].y;
