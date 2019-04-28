@@ -10,7 +10,7 @@ const BoardDimension = {
 }
 
 // Movement Directions
-enum Directions{
+enum Directions {
   DOWN,
   LEFT,
   RIGHT,

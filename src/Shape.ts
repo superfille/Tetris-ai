@@ -27,6 +27,7 @@ export default class Shape {
   constructor(game: Phaser.Game, board: Board, shapeTypes: any) {
     this.game = game;
     this.board = board;
+    this.shapeTypes = shapeTypes;
   }
 
   randomizeShape() {
@@ -38,6 +39,7 @@ export default class Shape {
   }
   
   initBlocks() {
+    this.blocks = [];
     for(let i = 0; i < ShapeStuff.NUM_BLOCKS_IN_SHAPE; i++) {
       this.blocks[i] = new Block(this.game);
     }

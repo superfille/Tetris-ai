@@ -1,8 +1,11 @@
 import * as Phaser from 'phaser';
 import { BLOCK_WIDTH } from './static_numbers';
+import backgroundImage from '../assets/background.png';
+import bannerImage from '../assets/banner.png';
+import blocksImage from '../assets/blocks.png';
 
 export default class Preloader extends Phaser.State {
-  preloader: Phaser.Sprite;
+  preloaderSprite: Phaser.Sprite;
 
   preload() {
     this.stage.backgroundColor = 0x111111;
@@ -14,28 +17,25 @@ export default class Preloader extends Phaser.State {
     bmd.ctx.fillStyle = "#999999";
     bmd.ctx.fillRect(0, 0, preloaderWidth, preloaderHeight);
 
-    this.preloader = this.game.add.sprite( 0, 0, bmd );
-    this.preloader.anchor.setTo( 0.5, 0.5 );
-    this.preloader.position.setTo(this.world.centerX,
-                                  this.world.height - this.preloader.height * 2);
-    this.load.setPreloadSprite(this.preloader);
+    this.preloaderSprite = this.game.add.sprite( 0, 0, bmd );
+    this.preloaderSprite.anchor.setTo( 0.5, 0.5 );
+    this.preloaderSprite.position.setTo(this.world.centerX,
+                                  this.world.height - this.preloaderSprite.height * 2);
+    this.load.setPreloadSprite(this.preloaderSprite);
 
-    this.load.path = './assets/';
 
     // Load images
-    this.load.image('background', 'background.png');
-    this.load.image('banner', 'banner.png');
-    this.load.spritesheet('block', 'blocks.png', BLOCK_WIDTH, BLOCK_WIDTH);
+    this.load.image('background', backgroundImage);
+    this.load.image('banner', bannerImage);
+    this.load.spritesheet('block', blocksImage, BLOCK_WIDTH, BLOCK_WIDTH);
     
     // Load blockPositions.json and put into Tetris.blockPositions
-    this.load.json('shapes', 'shapes.json');
+   // this.load.json('shapes', '../assets/shapes.json');
   }
   
   create() {
     this.stage.backgroundColor = 0x222222;
-  }
-  
-  start() {
     this.game.state.start('Game');
   }
+  
 };

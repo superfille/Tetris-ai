@@ -1,8 +1,8 @@
-import { Block } from "./Block";
-import { Board } from "./Board";
+import Block from "./Block";
+import Board from "./Board";
 import { ShapeStuff, Directions } from '../../static_numbers';
 
-export class Shape {
+export default class Shape {
   centerX: number;
   centerY: number;
   tetrisShape: any;

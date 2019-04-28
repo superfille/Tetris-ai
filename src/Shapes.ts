@@ -15,10 +15,7 @@ export default class Shapes {
     this.shapeTypes = shapeTypes;
     const amount = 3;
     for(let i = 0; i < amount; i++) {
-      const addShape = new Shape(this.game, this.board, this.shapeTypes);
-      addShape.randomizeShape();
-      addShape.activate();
-      this.queue.push(addShape);
+      this.nextShape(i === (amount - 1));
     }
   }
   
@@ -30,11 +27,13 @@ export default class Shapes {
     return this.queue[0];
   }
   
-  nextShape() {
+  nextShape(activate: boolean = true) {
     this.queue.shift();
     const addShape = new Shape(this.game, this.board, this.shapeTypes);
     addShape.randomizeShape();
-    addShape.activate();
     this.queue.push(addShape);
+    if (activate) {
+      this.queue[0].activate();
+    }
   }
 };

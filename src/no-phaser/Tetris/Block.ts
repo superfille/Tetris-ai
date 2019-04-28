@@ -1,4 +1,4 @@
-export class Block {
+export default class Block {
   x: number;
   y: number;
 
@@ -10,6 +10,10 @@ export class Block {
   moveBlock(newX: number, newY: number) {
     this.x = newX;
     this.y = newY;
+  }
+
+  clone() {
+    return new Block(this.x, this.y);
   }
 
 }

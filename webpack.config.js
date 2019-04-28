@@ -18,6 +18,12 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/
       },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          'file-loader'
+        ]
+      },
       { test: /pixi\.js/, loader: 'expose-loader?PIXI' },
       { test: /phaser-split\.js$/, loader: 'expose-loader?Phaser' },
       { test: /p2\.js/, loader: 'expose-loader?p2' },
@@ -29,7 +35,6 @@ module.exports = {
     host: 'localhost'
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'My Tetris'
     })

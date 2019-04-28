@@ -2,9 +2,9 @@ import Board from "./Board";
 import Shape from "./Shape";
 import Shapes from "./Shapes";
 import { Directions } from "./static_numbers";
+import shapesJson from '../assets/shapes.json';
 
 export default class Game extends Phaser.State {
-  stateKey = "Game"
   turnLength = 60;
   turnCounter = 0;
 
@@ -21,8 +21,6 @@ export default class Game extends Phaser.State {
 
   isGameOver: boolean = false;
 
-  Ai = new Tetris.Genetic(this);
-
   board: Board;
   shapesQueue: Shapes;
 
@@ -34,7 +32,6 @@ export default class Game extends Phaser.State {
   }
 
   create() {
-    console.log('New game')
     this.score = 0;
     this.scoreText = undefined;
     this.isGameOver = false;
@@ -45,8 +42,8 @@ export default class Game extends Phaser.State {
     this.add.sprite(0, 0, 'banner');
 
     // Retrieve blockPositions
-    this.shapesJSON = this.game.cache.getJSON('shapes');
-    this.shapes = this.shapesJSON.shapes;
+   // this.shapesJSON = this.game.cache.getJSON('shapes');
+    this.shapes = shapesJson.shapes;
 
     // Create an empty board filled with nulls
     this.board = new Board();
@@ -152,9 +149,7 @@ export default class Game extends Phaser.State {
   promoteShapes() {
     this.shapesQueue.nextShape();
     this.activeShape = this.shapesQueue.activeShape();
-    if (this.activeShape === undefined) {
-      debugger
-    }
+
     if (!this.activeShape.canMoveShape(Directions.CURRENT)) {
       this.gameOver();
     }

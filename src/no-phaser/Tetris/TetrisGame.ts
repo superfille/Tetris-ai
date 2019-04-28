@@ -1,8 +1,9 @@
-import { Board } from "./Board";
-import { Shape } from "./Shape";
+import Board from "./Board";
+import Shape from "./Shape";
 import { Directions } from "../../static_numbers";
+import shapesJson from '../assets/shapes.json';
 
-export class TetrisGame {
+export default class TetrisGame {
   shapes: [];
   board: Board;
   shapesQueue: Shape[];
@@ -10,13 +11,13 @@ export class TetrisGame {
   activeShape: Shape;
   isGameOver: boolean;
 
-  constructor(game: Phaser.Game) {
+  constructor() {
       this.board = new Board(true);
       this.shapesQueue = [];
       this.score = 0;
       this.activeShape;
       this.isGameOver = false
-      this.shapes = game.cache.getJSON('shapes').shapes;
+      this.shapes = shapesJson.shapes;
       
       this.initShapesQueue();
   }
@@ -30,9 +31,10 @@ export class TetrisGame {
     this.activeShape = this.shapesQueue[0];
   }
 
+  // Override this
   getNextMove(any: any): Shape {
     return {} as Shape;
-  } // Override this
+  }
 
   clear() {
     this.board = new Board(true);
@@ -46,7 +48,6 @@ export class TetrisGame {
     while (!this.isGameOver) {
       this.update();
     }
-    console.log(this.board);
     return this.score;
   }
 
@@ -63,7 +64,7 @@ export class TetrisGame {
 
     this.activeShape.addMove(move.blocks);
 
-    this.board.placeShapeInBoard(this.activeShape);
+    this.board.placeShape(this.activeShape);
     const completedRows = this.board.getCompleteRows();
 
     if (completedRows.length > 0) {
