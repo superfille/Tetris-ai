@@ -42,7 +42,6 @@ export default class Shape {
   
   moveShape(direction: Directions): boolean {
     if(!this.board.canMoveShape(this.blocks, direction)){
-      console.log('Cant move', this.blocks, this.board);
       return false;
     }
 
@@ -99,8 +98,8 @@ export default class Shape {
       const newY = this.centerY +
         this.tetrisShape.orientation[newOrientation].blockPosition[i].y;      
       
-      return this.board.isOnBoard({ x: newX, y: newY }) ||
-        !this.board.isOccupied({ x: newX, y: newY });
+      return !this.board.isOnBoard({ x: newX, y: newY }) ||
+        this.board.isOccupied({ x: newX, y: newY });
     });
   }
     
@@ -128,11 +127,7 @@ export default class Shape {
       centerY: this.centerY,
       tetrisShape: this.tetrisShape
     });
-    
-    newShape.blocks.forEach((block, i) => {
-      block.x = this.blocks[i].x;
-      block.y = this.blocks[i].y;
-    });
+    newShape.blocks = this.blocks.map(block => new Block(block.x, block.y));
 
     return newShape;
   }

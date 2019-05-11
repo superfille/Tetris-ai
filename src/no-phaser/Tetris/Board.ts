@@ -6,9 +6,7 @@ export default class Board {
   grid: Block[][];
 
   constructor(init = false) {
-    if (init) {
-      this.init();
-    }
+    this.init();
   }
 
   init() {
@@ -20,10 +18,10 @@ export default class Board {
   clone() {
     const newBoard = new Board();
     
-    for (let i = 0; i < BoardDimension.BOARD_HEIGHT; i++) {
-      for (let j = 0; j < BoardDimension.BOARD_WIDTH; j++) {
-        newBoard.grid[i][j] =
-          this.column(i, j) !== null ? this.column(i, j).clone() : null;
+    for (let y = 0; y < BoardDimension.BOARD_HEIGHT; y++) {
+      for (let x = 0; x < BoardDimension.BOARD_WIDTH; x++) {
+        newBoard.grid[y][x] =
+          this.column(y, x) !== null ? this.column(y, x).clone() : null;
       }
     }
   
@@ -38,7 +36,7 @@ export default class Board {
     return this.grid[y];
   }
 
-  column(x: number, y: number): Block {
+  column(y: number, x: number): Block {
     return this.grid[y][x];
   }
 
@@ -58,7 +56,7 @@ export default class Board {
   }
   
   isOccupied(position: {x: number, y: number }): boolean {
-    return this.grid[position.y][position.x] !== null; 
+    return this.grid[position.y][position.x] !== null;
   }
 
   moveLogic(block: Block, direction: Directions): {x: number, y: number} {

@@ -1,7 +1,14 @@
 import Tetris from "./Tetris";
-import AiTetris from './no-phaser/Tetris/TetrisGame';
+import Genetic from "./no-phaser/Ai/Genetic";
 
-const tetris: Tetris = new Tetris();
+const geneticAlgorithm: Genetic = new Genetic;
 
-tetris.run();
+geneticAlgorithm.play();
+
+// geneticAlgorithm.play();
+
+
+// const tetris: Tetris = new Tetris();
+
+// tetris.run();
 

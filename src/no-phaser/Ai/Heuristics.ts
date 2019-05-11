@@ -1,31 +1,63 @@
 import Board from "../Tetris/Board";
-
-interface HeuristicsScore {
-  completedLines: number;
-  height: number;
-  holes: number;
-  bumpiness: number;
-}
+import { randomNumber } from "../../Utils";
 
 export default class Heuristic {
-  heuristicsScore: HeuristicsScore;
+  _completedLines: number;
+  _height: number;
+  _holes: number;
+  _bumpiness: number;
 
-  constructor() {
-    this.heuristicsScore.completedLines = Math.random();
-    this.heuristicsScore.height = Math.random();
-    this.heuristicsScore.holes = Math.random();
-    this.heuristicsScore.bumpiness = Math.random();
+  constructor(data: { completedLines: number, height: number, holes: number, bumpiness: number } = undefined) {
+    if (data !== undefined) {
+      this._completedLines = data.completedLines;
+      this._height = data.height;
+      this._holes = data.holes;
+      this._bumpiness = data.bumpiness;
+    }
+  }
+
+  randomize() {
+    this._completedLines = Math.random() - 0.5;
+    this._height = Math.random() - 0.5;
+    this._holes = Math.random() - 0.5;
+    this._bumpiness = Math.random() - 0.5;
+
+    this.normalize();
   }
 
   score(board: Board) {
-    return this.heuristicsScore.completedLines * this.completedLines(board)
-      - this.heuristicsScore.height * this.height(board)
-      - this.heuristicsScore.holes * this.holes(board)
-      - this.heuristicsScore.bumpiness * this.bumpiness(board);
+    return this._completedLines * this.completedLines(board)
+      - this._height * this.height(board)
+      - this._holes * this.holes(board)
+      - this._bumpiness * this.bumpiness(board);
   }
 
-  format(): HeuristicsScore {
-    return this.heuristicsScore;
+  normalize() {
+    var norm = Math.sqrt(this._height * this._height + this._completedLines * this._completedLines + this._holes * this._holes + this._bumpiness * this._bumpiness);
+    this._height /= norm;
+    this._completedLines /= norm;
+    this._holes /= norm;
+    this._bumpiness /= norm;
+  }
+
+  mutate() {
+    if (Math.random() <= 0.05) {
+      const toAdd = randomNumber(-0.2, 0.2);
+      switch(randomNumber(0, 3)) {
+        case 0:
+          this._completedLines += toAdd;
+          break;
+        case 1:
+          this._height += toAdd;
+          break;
+        case 2:
+          this._holes += toAdd;
+          break;
+        case 3:
+          this._bumpiness += toAdd;
+          break;
+      }
+    }
   }
 
   height(board: Board) {
@@ -40,13 +72,17 @@ export default class Heuristic {
         }
       }
     }
-    return result;
+    this._height = result;
+
+    return this._height;
   }
 
   completedLines(board: Board) {
-    return board.grid.reduce((acc, next) => {
+    this._completedLines = board.grid.reduce((acc, next) => {
       return next.every(value => value !== null) ? acc + 1 : acc;
-    }, 0)
+    }, 0);
+
+    return this._completedLines;
   }
 
   holes(board: Board) {
@@ -61,7 +97,9 @@ export default class Heuristic {
         }
       }
     }
-    return result;
+    this._holes = result;
+
+    return this._holes;
   }
 
   bumpiness(board: Board) {
@@ -88,6 +126,8 @@ export default class Heuristic {
         previous = 0;
       }
     }
-    return result;
+    this._bumpiness = result;
+
+    return this._bumpiness;
   }
 }

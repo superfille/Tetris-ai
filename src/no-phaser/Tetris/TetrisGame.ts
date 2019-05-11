@@ -1,7 +1,7 @@
 import Board from "./Board";
 import Shape from "./Shape";
 import { Directions } from "../../static_numbers";
-import shapesJson from '../assets/shapes.json';
+import shapesJson from '../../../assets/shapes.json';
 
 export default class TetrisGame {
   shapes: [];
@@ -55,10 +55,10 @@ export default class TetrisGame {
     const move = this.getNextMove({
       board: this.board,
       activeShape: this.activeShape,
-      shapesQueue: this.shapesQueue
+      shapes: this.shapesQueue
     });
 
-    if (!!move) {
+    if (!move) {
       return;
     }
 
