@@ -72,14 +72,14 @@ export default class Shape {
   
   placeShapeInBoard(board: Board) {
     if (board) {
-      this.blocks.forEach(block => board.board[block.y][block.x] = block);
+      this.blocks.forEach(block => board.grid[block.y][block.x] = block);
     } else {
-      this.blocks.forEach(block => this.board.board[block.y][block.x] = block);
+      this.blocks.forEach(block => this.board.grid[block.y][block.x] = block);
     }
   }
 
   removeShapeInBoard(board: Board) {
-    this.blocks.forEach(block => board.board[block.y][block.x] = null);
+    this.blocks.forEach(block => board.grid[block.y][block.x] = null);
   }
 
   autoDrop() {
@@ -95,7 +95,7 @@ export default class Shape {
   }
   
   isOccupied(x: number, y: number): boolean {
-    return this.board.board[y][x] !== null;
+    return this.board.grid[y][x] !== null;
   }
   
   canMoveShape(direction: Directions): boolean {
@@ -129,12 +129,7 @@ export default class Shape {
 
   moveShape(direction: Directions, throwError = true, tween = true) {
     if(!this.canMoveShape(direction)){
-      if (throwError) {
-        console.log('cant move')
-        throw "Cannot move active shape in direction: " + direction;
-      } else {
-        return;
-      }
+        return false;
     }
 
     if(direction === Directions.CURRENT) {
@@ -203,9 +198,6 @@ export default class Shape {
     
   rotate(throwError = true, tween = true) {
     if(!this.canRotate()) {
-      if(throwError) {
-        throw "Cannot rotate active shape";
-      }
       return false;
     }
     

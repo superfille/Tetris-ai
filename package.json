@@ -16,6 +16,7 @@
     "expose-loader": "^0.7.5",
     "file-loader": "^3.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "jshint": "^2.10.2",
     "phaser": "^2.4.4",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.3",

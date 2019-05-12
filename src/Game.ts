@@ -3,6 +3,8 @@ import Shape from "./Shape";
 import Shapes from "./Shapes";
 import { Directions } from "./static_numbers";
 import shapesJson from '../assets/shapes.json';
+import Chromosome from "./no-phaser/Ai/Chromosome";
+import Heuristic from "./no-phaser/Ai/Heuristics";
 
 export default class Game extends Phaser.State {
   turnLength = 60;
@@ -26,6 +28,8 @@ export default class Game extends Phaser.State {
 
   shapesJSON: any;
   shapes: any;
+
+  ai: Chromosome;
 
   constructor() {
     super();
@@ -60,6 +64,10 @@ export default class Game extends Phaser.State {
     this.activeShape = this.shapesQueue.activeShape();
 
     this.setScoringText();
+
+
+    this.ai = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
+    
   }
 
   update() {
@@ -74,54 +82,54 @@ export default class Game extends Phaser.State {
     if (this.activeShape === null || this.activeShape === undefined) {
       return;
     }
+    
+    // @ts-ignore
+    const shape = this.ai.getBestMove(this.board, this.shapesQueue.queue, 0).shape;
+    this.activeShape.addMove(shape.blocks);
 
-    // const apa = this.Ai.getMove(this.board, this.shapesQueue.getShapes());
-    // apa.piece.autoDrop();
-    // this.activeShape.addMove(apa.piece.blocks);
+    this.activeShape.placeShapeInBoard(this.board);
+    this.completedRows = this.getCompleteRows();
 
-    // this.activeShape.placeShapeInBoard(this.board);
-    // this.completedRows = this.getCompleteRows();
-
-    // if (this.completedRows.length > 0) {
-    //   this.clearRow(this.completedRows);
-    //   this.isUpdatingAfterRowClear = true;
-    //   this.updateScore(this.completedRows.length);
-    // }
-
-    // this.completedRows = [];
-    // this.promoteShapes();
-
-    if (this.turnCounter >= this.turnLength) {
-      if (this.activeShape !== null && this.activeShape.canMoveShape(Directions.DOWN)) {
-        this.activeShape.moveShape(Directions.DOWN);
-      } else {
-        this.activeShape.placeShapeInBoard(this.board);
-        this.completedRows = this.getCompleteRows();
-
-        if (this.completedRows.length > 0) {
-          this.clearRow(this.completedRows);
-          this.isUpdatingAfterRowClear = true;
-          this.updateScore(this.completedRows.length);
-        } else {
-          this.promoteShapes();
-        }
-
-        this.completedRows = [];
-      }
-      this.turnCounter = 0;
-
-    } else if (this.isUpdatingAfterRowClear) {
-      if (this.turnCounter >= this.turnLength / 10) {
-        this.isUpdatingAfterRowClear = false;
-        this.promoteShapes();
-      } else {
-        this.turnCounter++;
-      }
-    } else {
-      this.handleInput();
-      
-      this.turnCounter += 1;
+    if (this.completedRows.length > 0) {
+      this.clearRow(this.completedRows);
+      this.isUpdatingAfterRowClear = true;
+      this.updateScore(this.completedRows.length);
     }
+
+    this.completedRows = [];
+    this.promoteShapes();
+
+    // if (this.turnCounter >= this.turnLength) {
+    //   if (this.activeShape !== null && this.activeShape.canMoveShape(Directions.DOWN)) {
+    //     this.activeShape.moveShape(Directions.DOWN);
+    //   } else {
+    //     this.activeShape.placeShapeInBoard(this.board);
+    //     this.completedRows = this.getCompleteRows();
+
+    //     if (this.completedRows.length > 0) {
+    //       this.clearRow(this.completedRows);
+    //       this.isUpdatingAfterRowClear = true;
+    //       this.updateScore(this.completedRows.length);
+    //     } else {
+    //       this.promoteShapes();
+    //     }
+
+    //     this.completedRows = [];
+    //   }
+    //   this.turnCounter = 0;
+
+    // } else if (this.isUpdatingAfterRowClear) {
+    //   if (this.turnCounter >= this.turnLength / 10) {
+    //     this.isUpdatingAfterRowClear = false;
+    //     this.promoteShapes();
+    //   } else {
+    //     this.turnCounter++;
+    //   }
+    // } else {
+    //   this.handleInput();
+      
+    //   this.turnCounter += 1;
+    // }
   }
 
   handleInput() {
@@ -156,13 +164,13 @@ export default class Game extends Phaser.State {
   }
 
   getCompleteRows() {
-    return this.board.board.reduce((acc, _, index) => {
+    return this.board.grid.reduce((acc, _, index) => {
       return this.isRowFull(index) ? acc.concat(index) : acc;
     }, Array());
   }
 
   isRowFull(row: number) {
-    return this.board.board[row].every(column => column !== null);
+    return this.board.grid[row].every(column => column !== null);
   }
 
   clearRow(completedRows: number[]) {
@@ -173,11 +181,11 @@ export default class Game extends Phaser.State {
 
       actualRowToClear = completedRows[i] + alreadyShifted;
 
-      row = this.board.board[actualRowToClear];
+      row = this.board.grid[actualRowToClear];
 
       for (j = 0; j < row.length; j++) {
-        this.board.board[actualRowToClear][j].clean();
-        this.board.board[actualRowToClear][j] = null;
+        this.board.grid[actualRowToClear][j].clean();
+        this.board.grid[actualRowToClear][j] = null;
       }
       this.dropRowsAbove(actualRowToClear - 1);
       alreadyShifted++;
@@ -188,13 +196,13 @@ export default class Game extends Phaser.State {
     var i, j, block;
 
     for (i = row; i >= 0; i--) {
-      for (j = 0; j < this.board.board[i].length; j++) {
+      for (j = 0; j < this.board.grid[i].length; j++) {
 
-        block = this.board.board[i][j];
+        block = this.board.grid[i][j];
         if (block !== null) {
-          this.board.board[i][j].moveBlock(block.x, block.y + 1);
-          this.board.board[i + 1][j] = this.board.board[i][j];
-          this.board.board[i][j] = null;
+          this.board.grid[i][j].moveBlock(block.x, block.y + 1);
+          this.board.grid[i + 1][j] = this.board.grid[i][j];
+          this.board.grid[i][j] = null;
         }
 
       }

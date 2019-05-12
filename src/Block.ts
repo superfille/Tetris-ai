@@ -13,6 +13,13 @@ export default class Block {
     this.game = game;
   }
 
+  clone() {
+    const block = new Block(this.game);
+    block.x = this.x;
+    block.y = this.y;
+    return block;
+  }
+
   makeBlock(newX: number, newY: number, newColor: Colors) {
     this.x = newX;
     this.y = newY;
