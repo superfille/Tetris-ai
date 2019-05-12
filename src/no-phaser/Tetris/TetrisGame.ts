@@ -59,7 +59,8 @@ export default class TetrisGame {
     while (!this.isGameOver) {
       await this.updateAsync();
     }
-
+    
+    this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT)
     return this.score;
   }
 
@@ -73,7 +74,7 @@ export default class TetrisGame {
     if (!move) {
       return;
     }
-
+    
     this.activeShape.addMove(move.blocks);
     this.board.placeShape(this.activeShape);
     this.shapesQueue.forEach((shape, index) => shape.printMe(index))

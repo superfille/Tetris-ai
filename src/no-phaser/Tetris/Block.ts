@@ -1,24 +1,24 @@
 import { Tetrimino, getColor } from "../../static_numbers";
 
 export default class Block {
-  x: number;
-  y: number;
+  row: number;
+  column: number;
   color: string;
   type: Tetrimino;
 
-  constructor(x: number, y: number, type: Tetrimino) {
-    this.x = x;
-    this.y = y;
+  constructor(row: number, column: number, type: Tetrimino) {
+    this.row = row;
+    this.column = column;
     this.type = type;
     this.color = getColor(type);
   }
   
-  moveBlock(newX: number, newY: number) {
-    this.x = newX;
-    this.y = newY;
+  moveBlock(newRow: number, newColumn: number) {
+    this.row = newRow;
+    this.column = newColumn;
   }
 
   clone() {
-    return new Block(this.x, this.y, this.type);
+    return new Block(this.row, this.column, this.type);
   }
 }

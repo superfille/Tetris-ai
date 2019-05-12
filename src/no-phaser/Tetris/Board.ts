@@ -11,17 +11,17 @@ export default class Board {
 
   init() {
     // Creates [][] array of nulls
-    this.grid = Array.from({length: BoardDimension.BOARD_HEIGHT},
-        () => Array(BoardDimension.BOARD_WIDTH).fill(null))
+    this.grid = Array.from({length: BoardDimension.BOARD_ROWS},
+        () => Array(BoardDimension.BOARD_COLUMNS).fill(null))
   }
     
   clone() {
     const newBoard = new Board();
     
-    for (let y = 0; y < BoardDimension.BOARD_HEIGHT; y++) {
-      for (let x = 0; x < BoardDimension.BOARD_WIDTH; x++) {
-        newBoard.grid[y][x] =
-          this.column(x, y) !== null ? this.column(x, y).clone() : null;
+    for (let row = 0; row < BoardDimension.BOARD_ROWS; row++) {
+      for (let column = 0; column < BoardDimension.BOARD_COLUMNS; column++) {
+        newBoard.grid[row][column] =
+          this.column(row, column) !== null ? this.column(row, column).clone() : null;
       }
     }
   
@@ -32,43 +32,43 @@ export default class Board {
     return this.grid.length;
   }
 
-  row(y: number): Block[] {
-    return this.grid[y];
+  row(row: number): Block[] {
+    return this.grid[row];
   }
 
-  column(x: number, y: number): Block {
-    return this.grid[y][x];
+  column(row: number, column: number): Block {
+    return this.grid[row][column];
   }
 
   placeShape(shape: Shape) {
-    shape.blocks.forEach(block => this.grid[block.y][block.x] = block);
+    shape.blocks.forEach(block => this.grid[block.row][block.column] = block);
   }
 
   removeShape(shape: Shape) {
-    shape.blocks.forEach(block => this.grid[block.y][block.x] = null);
+    shape.blocks.forEach(block => this.grid[block.row][block.column] = null);
   }
 
-  isOnBoard(position: { x: number, y: number }) {
-    return position.x >= 0 &&
-          position.y >= 0 && 
-          position.x < BoardDimension.BOARD_WIDTH &&
-          position.y < BoardDimension.BOARD_HEIGHT  
+  isOnBoard(position: { row: number, column: number }) {
+    return position.row >= 0 &&
+          position.column >= 0 && 
+          position.column < BoardDimension.BOARD_COLUMNS &&
+          position.row < BoardDimension.BOARD_ROWS  
   }
   
-  isOccupied(position: {x: number, y: number }): boolean {
-    return this.grid[position.y][position.x] !== null;
+  isOccupied(position: {row: number, column: number }): boolean {
+    return this.grid[position.row][position.column] !== null;
   }
 
-  moveLogic(block: Block, direction: Directions): {x: number, y: number} {
+  moveLogic(block: Block, direction: Directions): { row: number, column: number } {
     switch(direction) {
       case Directions.CURRENT:
-        return { x: block.x, y: block.y };
+        return { row: block.row, column: block.column };
       case Directions.DOWN:
-        return { x: block.x, y: block.y + 1 };
+        return { row: block.row + 1, column: block.column };
       case Directions.LEFT:
-        return { x: block.x - 1, y: block.y };
+        return { row: block.row, column: block.column - 1 };
       case Directions.RIGHT:
-        return { x: block.x + 1, y: block.y };
+        return { row: block.row, column: block.column + 1 };
     }  
   }
 
@@ -76,7 +76,7 @@ export default class Board {
     return blocks.every(block => {
       const position = this.moveLogic(block, direction);
       return this.isOnBoard(position) && !this.isOccupied(position)
-    })
+    });
   }
 
   getCompleteRows(): number[] {
@@ -100,12 +100,9 @@ export default class Board {
   }
 
   columnHeight(column: number): number {
-    for(let row = 0; row < this.grid.length; row++) {
-      if (this.grid[row][column] !== null) {
-        return this.grid.length - row;
-      }
-    }
-    return 0;
+    var r = 0;
+    for(; r < this.grid.length && this.grid[r][column] === null; r++);
+    return this.grid[0].length - r;
   }
 
   clearRows(completedRows: number[]) {
@@ -123,14 +120,14 @@ export default class Board {
     }
   }
 
-  dropRowsAbove(row: number) {
-    for (let i = row; i >= 0; i--) {
-      for (let j = 0; j < this.grid[i].length; j++) {
-        let block = this.grid[i][j];
+  dropRowsAbove(rowToDrop: number) {
+    for (let row = rowToDrop; row >= 0; row--) {
+      for (let column = 0; column < this.grid[row].length; column++) {
+        let block = this.grid[row][column];
         if (block !== null) {
-          this.grid[i][j].moveBlock(block.x, block.y + 1);
-          this.grid[i + 1][j] = this.grid[i][j];
-          this.grid[i][j] = null;
+          this.grid[row][column].moveBlock(block.row, block.column + 1);
+          this.grid[row + 1][column] = this.grid[row][column];
+          this.grid[row][column] = null;
         }
       }
     }
@@ -150,12 +147,12 @@ export default class Board {
     tbl.setAttribute('border', '1');
     var tbdy = document.createElement('tbody');
 
-    for (var x = 0; x < BoardDimension.BOARD_HEIGHT; x++) {
+    for (var row = 0; row < BoardDimension.BOARD_ROWS; row++) {
       var tr = document.createElement('tr');
-      for (var y = 0; y < BoardDimension.BOARD_WIDTH; y++) {
+      for (var column = 0; column < BoardDimension.BOARD_COLUMNS; column++) {
         var td = document.createElement('td');
-        if (this.grid[x][y] !== null) {
-          td.style.backgroundColor = this.grid[x][y].color;
+        if (this.grid[row][column] !== null) {
+          td.style.backgroundColor = this.grid[row][column].color;
         }
         td.height = '20';
         td.width = '20';

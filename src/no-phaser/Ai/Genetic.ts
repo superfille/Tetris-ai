@@ -67,8 +67,12 @@ export default class Genetic {
     this.population = [];
     this.initializePopulation(this.population, 10);
     this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
-    await this.population[0].playAsync();
-    console.log('Fitness: ', this.population[0]._fitness);
+    try {
+      await this.population[0].playAsync();
+      console.log('Fitness: ', this.population[0]._fitness);
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   play(){

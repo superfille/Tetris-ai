@@ -89,9 +89,9 @@ export default class Shape {
     this.hasBeenPlaced = true;
   }
   
-  isOnBoard(x: number, y: number): boolean {
-    return x >= 0 && y >= 0 && 
-       x < BoardDimension.BOARD_WIDTH && y < BoardDimension.BOARD_HEIGHT
+  isOnBoard(row: number, column: number): boolean {
+    return row >= 0 && column >= 0 && 
+       row < BoardDimension.BOARD_ROWS && column < BoardDimension.BOARD_COLUMNS
   }
   
   isOccupied(x: number, y: number): boolean {

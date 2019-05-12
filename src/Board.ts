@@ -6,9 +6,9 @@ export default class Board {
   grid: Block[][];
 
   constructor () {
-    this.grid = Array(BoardDimension.BOARD_HEIGHT);
-    for (let i = 0; i < BoardDimension.BOARD_HEIGHT; i++) {
-      const row: Block[] = Array(BoardDimension.BOARD_WIDTH).fill(null);
+    this.grid = Array(BoardDimension.BOARD_ROWS);
+    for (let i = 0; i < BoardDimension.BOARD_ROWS; i++) {
+      const row: Block[] = Array(BoardDimension.BOARD_COLUMNS).fill(null);
       this.grid[i] = row;
     }
   }
@@ -16,8 +16,8 @@ export default class Board {
   clone() {
     const newBoard = new Board();
 
-    for (let x = 0; x < BoardDimension.BOARD_HEIGHT; x++) {
-      for (let y = 0; y < BoardDimension.BOARD_WIDTH; y++) {
+    for (let x = 0; x < BoardDimension.BOARD_ROWS; x++) {
+      for (let y = 0; y < BoardDimension.BOARD_COLUMNS; y++) {
         newBoard.grid[x][y] =
           this.grid[x][y] !== null ? this.grid[x][y].clone() : null;
       }

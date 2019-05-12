@@ -5,8 +5,8 @@ const BLOCK_WIDTH = 50;
 
 // Board Size
 const BoardDimension = {
-  BOARD_WIDTH: 10,
-  BOARD_HEIGHT: 16
+  BOARD_COLUMNS: 10,
+  BOARD_ROWS: 16
 }
 
 // Movement Directions

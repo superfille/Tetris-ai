@@ -26,29 +26,29 @@ export default class Shape {
     this.centerX = this.tetrisShape.orientation[this.orientation].startingLocation.x;
     this.centerY = this.tetrisShape.orientation[this.orientation].startingLocation.y;
 
-    for(let i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
       let newX = this.centerX + this.tetrisShape.orientation[this.orientation].blockPosition[i].x;
       let newY = this.centerY + this.tetrisShape.orientation[this.orientation].blockPosition[i].y;
-      this.blocks.push(new Block(newX, newY, this.tetrisShape.name));
+      this.blocks.push(new Block(newY, newX, this.tetrisShape.name));
     }
   }
   
   autoDrop() {
-    while(this.board.canMoveShape(this.blocks, Directions.DOWN)) {
+    while (this.board.canMoveShape(this.blocks, Directions.DOWN)) {
       this.moveShape(Directions.DOWN);
     }
   }
   
   allTheWayToLeft() {
-    while(this.moveShape(Directions.LEFT));    
+    while (this.moveShape(Directions.LEFT));    
   }
 
   moveShape(direction: Directions): boolean {
-    if(!this.board.canMoveShape(this.blocks, direction)){
+    if (!this.board.canMoveShape(this.blocks, direction)){
       return false;
     }
 
-    if(direction === Directions.CURRENT) {
+    if (direction === Directions.CURRENT) {
       return true;
     }
 
@@ -58,16 +58,16 @@ export default class Shape {
     for(let i = 0; i < this.blocks.length; i++) {
       switch(direction) {
         case Directions.DOWN:
-          newX = this.blocks[i].x;
-          newY = this.blocks[i].y + 1;
+          newX = this.blocks[i].row + 1;
+          newY = this.blocks[i].column;
           break;
         case Directions.LEFT:
-          newX = this.blocks[i].x - 1;
-          newY = this.blocks[i].y;
+          newX = this.blocks[i].row;
+          newY = this.blocks[i].column - 1;
           break;
         case Directions.RIGHT:
-          newX = this.blocks[i].x + 1;
-          newY = this.blocks[i].y;
+          newX = this.blocks[i].row;
+          newY = this.blocks[i].column + 1;
           break;
       }  
       this.blocks[i].moveBlock(newX, newY);
@@ -101,8 +101,8 @@ export default class Shape {
       const newY = this.centerY +
         this.tetrisShape.orientation[newOrientation].blockPosition[i].y;      
       
-      return !this.board.isOnBoard({ x: newX, y: newY }) ||
-        this.board.isOccupied({ x: newX, y: newY });
+      return !this.board.isOnBoard({ row: newX, column: newY }) ||
+        this.board.isOccupied({ row: newX, column: newY });
     });
   }
     
@@ -115,7 +115,7 @@ export default class Shape {
     this.blocks.forEach((block, i) => {
       const newX = this.centerX + this.tetrisShape.orientation[newOrientation].blockPosition[i].x;
       const newY = this.centerY + this.tetrisShape.orientation[newOrientation].blockPosition[i].y;      
-      block.moveBlock(newX, newY);
+      block.moveBlock(newY, newX);
     });
     this.orientation = newOrientation;
     
@@ -130,15 +130,15 @@ export default class Shape {
       centerY: this.centerY,
       tetrisShape: this.tetrisShape
     });
-    newShape.blocks = this.blocks.map(block => new Block(block.x, block.y, block.type));
+    newShape.blocks = this.blocks.map(block => new Block(block.row, block.column, block.type));
 
     return newShape;
   }
 
   addMove(blocks: Block[]) {
     this.blocks.forEach((block, i) => {
-      block.x = blocks[i].x;
-      block.y = blocks[i].y;
+      block.row = blocks[i].row;
+      block.column = blocks[i].column;
     });
   }
 

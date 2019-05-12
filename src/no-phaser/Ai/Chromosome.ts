@@ -72,8 +72,9 @@ export default class Chromosome {
       return bestMoveShape.shape;
     }
 
-    tetrisGame.playAsync();
+    await tetrisGame.playAsync();
     this._fitness = tetrisGame.score;
+    return Promise.resolve();
   }
 
   play() {
@@ -97,7 +98,7 @@ export default class Chromosome {
   async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
     const clonedBoard = board.clone();
 
-    await this.holeUp(1000);
+    await this.holeUp(500);
     return Promise.resolve(this.getBestMoveHelper(clonedBoard, shapes, index));
   }
 
@@ -110,28 +111,31 @@ export default class Chromosome {
     let bestScore = null;
     let activeShape = shapes[index];
 
-    for(let rotation = 0; rotation < 3; rotation++){
+    for(let rotation = 0; rotation < 4; rotation++){
         const copiedActiveShape = activeShape.clone();
         for(let i = 0; i < rotation; i++){
             copiedActiveShape.rotate()
         }
-
         copiedActiveShape.allTheWayToLeft()
         
         let direction = Directions.CURRENT;
         while(copiedActiveShape.moveShape(direction)){
             const clonedShape = copiedActiveShape.clone();
+            
+            const clonedBoard = board.clone();
+            clonedShape.board = clonedBoard;
             clonedShape.autoDrop();
-            board.placeShape(clonedShape);
+            
+ 
+            clonedBoard.placeShape(clonedShape);
 
             let score = null;
             if (index === (shapes.length - 1)) {
-              score = this.heuristics.score(board)
+              score = this.heuristics.score(clonedBoard);
             } else {
-              score = this.getBestMove(board, shapes, index + 1).score;
+              score = this.getBestMove(clonedBoard, shapes, index + 1).score;
             }
-            board.removeShape(clonedShape);
-
+            
             if (score > bestScore || bestScore == null){
               bestScore = score;
               best = copiedActiveShape.clone();
