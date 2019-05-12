@@ -46,8 +46,37 @@ const ShapeStuff = {
   }
 }
 
+enum Tetrimino {
+  I = 'I',
+  J = 'J',
+  L = 'L',
+  O = 'O',
+  S = 'S',
+  Z = 'Z',
+  T = 'T'
+}
+
+const getColor = (shapeType: Tetrimino): string => {
+  switch(shapeType) {
+    case Tetrimino.I:
+      return 'cyan';
+    case Tetrimino.J:
+    case Tetrimino.L:
+      return 'orange';
+    case Tetrimino.O:
+      return 'yellow';
+    case Tetrimino.S:
+    case Tetrimino.Z:
+      return 'green';
+    case Tetrimino.T:
+      return 'purple';
+  }
+  return 'tomato';
+}
+
 
 export {
   BANNER_HEIGHT, LINING_WIDTH, BLOCK_WIDTH,
-  BoardDimension, Directions, Colors, ScreenDimension, ShapeStuff
+  BoardDimension, Directions, Colors, ScreenDimension, ShapeStuff,
+  getColor, Tetrimino
 }

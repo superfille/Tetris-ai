@@ -61,20 +61,12 @@ export default class Heuristic {
   }
 
   height(board: Board) {
-    let result = 0;
-    const ignoreList: number[] = [];
-
-    for(let y = 0; y < board.length; y++) {
-      for(let x = 0; x < board.row(y).length; x++) {
-        if (board.column(y, x) && ignoreList.indexOf(x) >= 0) {
-          result += board.length - y;
-          ignoreList.push(x);
-        }
+    for(let y = board.length - 1; y > 0; y--) {
+      if (board.isRowEmpty(y)) {
+        this._height = (board.length - 1) - y;
+        return this._height;
       }
     }
-    this._height = result;
-
-    return this._height;
   }
 
   completedLines(board: Board) {
@@ -86,48 +78,33 @@ export default class Heuristic {
   }
 
   holes(board: Board) {
-    let result = 0;
-    for(let x = 0; x < board.row(0).length; x++) {
-      let isCounting = false;
-      for(let y = 0; y < board.length; y++) {
-        if (isCounting && board.column(y, x) === null) {
-          result += 1;
-        } else if (!isCounting && board.column(y, x) !== null) {
-          isCounting = true;
+    let count = 0;
+    for(let y = 0; y < board.length; y++) {
+      let block = false;
+      for(let x = 0; x < board.row(0).length; x++) {
+        if (board.column(x, y) !== null) {
+          block = true;
+        } else if (board.column(x, y) === null && block) {
+          count += 1;
         }
       }
     }
-    this._holes = result;
-
+    this._holes = count;
     return this._holes;
   }
 
   bumpiness(board: Board) {
-    let result = 0;
+    let total = 0;
     let previous = 0;
-    let isFirst = true;
-    for(let x = 0; x < board.row(0).length; x++) {
-      let found = false;
-      for(let y = 0; y < board.length; y++) {
-        if (board.column(y, x) !== null) {
-          const top = board.length - y;
-          result += previous + top;
-          previous = top;
-          if (isFirst) {
-            result = 0;
-            isFirst = false;
-          }
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        result += previous + 0;
-        previous = 0;
-      }
+    let current = 0;
+    previous = board.columnHeight(0);
+    for(let y = 1; y < board.row(0).length - 1; y++) {
+      current = board.columnHeight(y);
+      total += Math.abs(previous - current);
+      previous = current;
     }
-    this._bumpiness = result;
 
-    return this._bumpiness;
+    this._bumpiness = total;
+    return total;
   }
 }

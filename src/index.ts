@@ -1,9 +1,13 @@
 import Tetris from "./Tetris";
 import Genetic from "./no-phaser/Ai/Genetic";
 
+
+
+
+
 const geneticAlgorithm: Genetic = new Genetic;
 
-geneticAlgorithm.play();
+geneticAlgorithm.playAsync();
 
 // geneticAlgorithm.play();
 

@@ -33,13 +33,13 @@ export default class Genetic {
     var fittestCandidateIndex1 = null;
     var fittestCanddiateIndex2 = null;
     for (var i = 0; i < ways; i++){
-        var selectedIndex = indices.splice(randomInteger(0, indices.length), 1)[0];
-        if(fittestCandidateIndex1 === null || selectedIndex < fittestCandidateIndex1){
-            fittestCanddiateIndex2 = fittestCandidateIndex1;
-            fittestCandidateIndex1 = selectedIndex;
-        } else if (fittestCanddiateIndex2 === null || selectedIndex < fittestCanddiateIndex2){
-            fittestCanddiateIndex2 = selectedIndex;
-        }
+      var selectedIndex = indices.splice(randomInteger(0, indices.length), 1)[0];
+      if(fittestCandidateIndex1 === null || selectedIndex < fittestCandidateIndex1){
+        fittestCanddiateIndex2 = fittestCandidateIndex1;
+        fittestCandidateIndex1 = selectedIndex;
+      } else if (fittestCanddiateIndex2 === null || selectedIndex < fittestCanddiateIndex2){
+        fittestCanddiateIndex2 = selectedIndex;
+      }
     }
     return [candidates[fittestCandidateIndex1], candidates[fittestCanddiateIndex2]];
   }
@@ -53,23 +53,28 @@ export default class Genetic {
 
   computeFitnesses(population: Chromosome[], numberOfGames: number, maxNumberOfMoves: number) {
     for(var i = 0; i < population.length; i++){
-        var candidate: Chromosome = population[i];
-        var totalScore = 0;
-        for(var j = 0; j < numberOfGames; j++){
-            candidate.play();
-            totalScore += candidate.fitness();
-        }
-        candidate.setFinalFitness(totalScore);
-        console.log('Final fitness of a chromosome', candidate.finalFitness());
+      const candidate: Chromosome = population[i];
+      var totalScore = 0;
+      for(var j = 0; j < numberOfGames; j++){
+        candidate.play();
+        totalScore += candidate.fitness();
+      }
+      candidate.setFinalFitness(totalScore);
+      console.log('Final fitness of a chromosome', candidate.finalFitness());
     }
 }
+  async playAsync() {
+    this.population = [];
+    this.initializePopulation(this.population, 10);
+    this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
+    await this.population[0].playAsync();
+    console.log('Fitness: ', this.population[0]._fitness);
+  }
 
   play(){
     // Initial population generation
     this.population = [];
     this.initializePopulation(this.population, 10);
-    this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
-
     console.log('Computing fitnesses of initial population...');
     this.computeFitnesses(this.population, 10, 200);
     this.sortPopulation(this.population);

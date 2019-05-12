@@ -36,6 +36,10 @@ export default class TetrisGame {
     return {} as Shape;
   }
 
+  getNextMoveAsync(any: any): Promise<Shape> {
+    return {} as any;
+  }
+
   clear() {
     this.board = new Board(true);
     this.shapesQueue = [];
@@ -49,6 +53,38 @@ export default class TetrisGame {
       this.update();
     }
     return this.score;
+  }
+
+  async playAsync() {
+    while (!this.isGameOver) {
+      await this.updateAsync();
+    }
+
+    return this.score;
+  }
+
+  async updateAsync() {
+    const move = await this.getNextMoveAsync({
+      board: this.board,
+      activeShape: this.activeShape,
+      shapes: this.shapesQueue
+    });
+
+    if (!move) {
+      return;
+    }
+
+    this.activeShape.addMove(move.blocks);
+    this.board.placeShape(this.activeShape);
+    this.shapesQueue.forEach((shape, index) => shape.printMe(index))
+    this.board.printMe();
+    const completedRows = this.board.getCompleteRows();
+
+    if (completedRows.length > 0) {
+      this.board.clearRows(completedRows);
+      this.calculateScore(completedRows.length);
+    }
+    this.updateShapesQueue();
   }
 
   update() {
@@ -65,6 +101,7 @@ export default class TetrisGame {
     this.activeShape.addMove(move.blocks);
 
     this.board.placeShape(this.activeShape);
+    
     const completedRows = this.board.getCompleteRows();
 
     if (completedRows.length > 0) {

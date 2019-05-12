@@ -63,6 +63,19 @@ export default class Chromosome {
     return this._fitness * this.heuristics._holes;
   }
 
+  async playAsync() {
+    const tetrisGame = new TetrisGame;
+
+    tetrisGame.getNextMoveAsync = async (params: any) => {
+      const bestMoveShape = await this.getBestMoveAsync(params.board, params.shapes, 0);
+      bestMoveShape.shape.autoDrop();
+      return bestMoveShape.shape;
+    }
+
+    tetrisGame.playAsync();
+    this._fitness = tetrisGame.score;
+  }
+
   play() {
     const tetrisGame = new TetrisGame;
     tetrisGame.getNextMove = (params: any) => {
@@ -81,6 +94,17 @@ export default class Chromosome {
     return this.getBestMoveHelper(clonedBoard, shapes, index);
   }
 
+  async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
+    const clonedBoard = board.clone();
+
+    await this.holeUp(1000);
+    return Promise.resolve(this.getBestMoveHelper(clonedBoard, shapes, index));
+  }
+
+  async holeUp(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   getBestMoveHelper(board: Board, shapes: Shape[], index: number): Best {
     let best = null;
     let bestScore = null;
@@ -92,13 +116,12 @@ export default class Chromosome {
             copiedActiveShape.rotate()
         }
 
-        while(copiedActiveShape.moveShape(Directions.LEFT));
+        copiedActiveShape.allTheWayToLeft()
         
         let direction = Directions.CURRENT;
         while(copiedActiveShape.moveShape(direction)){
             const clonedShape = copiedActiveShape.clone();
             clonedShape.autoDrop();
-
             board.placeShape(clonedShape);
 
             let score = null;

@@ -1,6 +1,6 @@
 import Block from "./Block";
 import Board from "./Board";
-import { ShapeStuff, Directions } from '../../static_numbers';
+import { ShapeStuff, Directions, Tetrimino } from '../../static_numbers';
 
 export default class Shape {
   centerX: number;
@@ -10,7 +10,6 @@ export default class Shape {
   orientation: number;
   blocks: Block[];
   board: Board;
-
 
   constructor(board: Board) {
     this.centerX = null;
@@ -30,7 +29,7 @@ export default class Shape {
     for(let i = 0; i < 4; i++) {
       let newX = this.centerX + this.tetrisShape.orientation[this.orientation].blockPosition[i].x;
       let newY = this.centerY + this.tetrisShape.orientation[this.orientation].blockPosition[i].y;
-      this.blocks.push(new Block(newX, newY));
+      this.blocks.push(new Block(newX, newY, this.tetrisShape.name));
     }
   }
   
@@ -40,6 +39,10 @@ export default class Shape {
     }
   }
   
+  allTheWayToLeft() {
+    while(this.moveShape(Directions.LEFT));    
+  }
+
   moveShape(direction: Directions): boolean {
     if(!this.board.canMoveShape(this.blocks, direction)){
       return false;
@@ -127,7 +130,7 @@ export default class Shape {
       centerY: this.centerY,
       tetrisShape: this.tetrisShape
     });
-    newShape.blocks = this.blocks.map(block => new Block(block.x, block.y));
+    newShape.blocks = this.blocks.map(block => new Block(block.x, block.y, block.type));
 
     return newShape;
   }
@@ -137,5 +140,148 @@ export default class Shape {
       block.x = blocks[i].x;
       block.y = blocks[i].y;
     });
+  }
+
+  printMe(index: number) {
+    var body = document.getElementsByTagName('body')[0];
+
+    let shapesElement = document.getElementById('shapes');
+    if (shapesElement === null) {
+      shapesElement = document.createElement('div');
+      shapesElement.id = 'shapes';
+      shapesElement.style.display = 'flex';
+      shapesElement.style.marginBottom = '15px';
+      body.appendChild(shapesElement);
+    }
+
+    let tbl = document.getElementById(`nextShape${index}`);
+    if (tbl === null) {
+      tbl = document.createElement('table');
+      tbl.id = `nextShape${index}`;
+      tbl.style.marginRight = '6px';
+      shapesElement.appendChild(tbl);
+    } else {
+      tbl.innerHTML = null;
+    }
+  
+    tbl.style.width = '80px';
+    tbl.setAttribute('border', '1');
+    var tbdy = document.createElement('tbody');
+    
+    this.printMeTetrimino(tbdy);
+    tbl.appendChild(tbdy);
+    shapesElement.appendChild(tbl);
+  }
+
+  printMeTetrimino(tableBody: HTMLElement) {
+    switch(this.blocks[0].type) {
+      case Tetrimino.I:
+        return this.printI(tableBody);
+      case Tetrimino.J:
+      case Tetrimino.L:
+        return this.printJL(tableBody);
+      case Tetrimino.O:
+        return this.printO(tableBody);
+      case Tetrimino.S:
+      case Tetrimino.Z:
+        return this.printSZ(tableBody);
+      case Tetrimino.T:
+        return this.printT(tableBody);
+    }
+  }
+
+  /* [][][]
+       []
+  */
+  printT(tableBody: HTMLElement) {
+    for (var x = 0; x < 2; x++) {
+      var tr = document.createElement('tr');
+      for (var y = 0; y < 3; y++) {
+        var td = document.createElement('td');
+        if (x === 1 && (y === 0 || y === 2)) {
+        } else {
+          td.style.backgroundColor = this.blocks[0].color;
+        }
+        td.height = '20';
+        td.width = '20';
+        tr.appendChild(td)
+      }
+      tableBody.appendChild(tr);
+    }
+  }
+
+  /* [][]
+       [][]
+  */
+  printSZ(tableBody: HTMLElement) {
+    for (var x = 0; x < 2; x++) {
+      var tr = document.createElement('tr');
+      for (var y = 0; y < 3; y++) {
+        var td = document.createElement('td');
+        if ((x === 0 && y === 2) || (x === 1 && y === 0)) {
+        } else {
+          td.style.backgroundColor = this.blocks[0].color;
+        }
+        td.height = '20';
+        td.width = '20';
+        tr.appendChild(td)
+      }
+      tableBody.appendChild(tr);
+    }
+  }
+
+  /* [][]
+     [][]
+  */
+  printO(tableBody: HTMLElement) {
+    for (var x = 0; x < 2; x++) {
+      var tr = document.createElement('tr');
+      for (var y = 0; y < 2; y++) {
+        var td = document.createElement('td');
+        td.style.backgroundColor = this.blocks[0].color;
+        td.height = '20';
+        td.width = '20';
+        tr.appendChild(td)
+      }
+      tableBody.appendChild(tr);
+    }
+  }
+
+  /* [][][]
+         []
+  */
+  printJL(tableBody: HTMLElement) {
+    for (var x = 0; x < 2; x++) {
+      var tr = document.createElement('tr');
+      for (var y = 0; y < 3; y++) {
+        var td = document.createElement('td');
+        if (x === 1 && (y === 0 || y === 1)) {
+        }
+        else {
+          td.style.backgroundColor = this.blocks[0].color;
+        }
+        td.height = '20';
+        td.width = '20';
+        tr.appendChild(td)
+      }
+      tableBody.appendChild(tr);
+    }
+  }
+
+  /* []
+     []
+     []
+     []
+  */
+  printI(tableBody: HTMLElement) {
+    var tr = document.createElement('tr');
+    for (var x = 0; x < 4; x++) {
+      var td = document.createElement('td');
+      td.style.backgroundColor = this.blocks[0].color;
+      td.height = '20';
+      td.width = '20';
+      tr.appendChild(td)
+    }
+    tableBody.appendChild(tr);
   }
 }
