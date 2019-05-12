@@ -26,10 +26,10 @@ export default class Heuristic {
   }
 
   score(board: Board) {
-    return this._completedLines * this.completedLines(board)
-      - this._height * this.height(board)
-      - this._holes * this.holes(board)
-      - this._bumpiness * this.bumpiness(board);
+    return -(this._height * this.height(board))
+      + (this._completedLines * this.completedLines(board))
+      - (this._holes * this.holes(board))
+      - (this._bumpiness * this.bumpiness(board));
   }
 
   normalize() {

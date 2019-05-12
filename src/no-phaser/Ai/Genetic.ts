@@ -87,13 +87,13 @@ export default class Genetic {
     while(true){
         var newCandidates = [];
         for(var i = 0; i < 3; i++) {
-            var pair = this.tournamentSelection(this.population, 2);
-            var candidate = this.crossover(pair[0], pair[1]);
-            if(Math.random() < 0.05){
-                candidate.mutate();
-            }
-            candidate.normalize()
-            newCandidates.push(candidate);
+          var pair = this.tournamentSelection(this.population, 2);
+          var candidate = this.crossover(pair[0], pair[1]);
+          if(Math.random() < 0.05){
+              candidate.mutate();
+          }
+          candidate.normalize()
+          newCandidates.push(candidate);
         }
         console.log('Computing fitnesses of new candidates. (' + count + ')');
         this.computeFitnesses(newCandidates, 10, 200);

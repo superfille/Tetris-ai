@@ -77,9 +77,10 @@ export default class TetrisGame {
     
     this.activeShape.addMove(move.blocks);
     this.board.placeShape(this.activeShape);
+    const completedRows = this.board.getCompleteRows();
+
     this.shapesQueue.forEach((shape, index) => shape.printMe(index))
     this.board.printMe();
-    const completedRows = this.board.getCompleteRows();
 
     if (completedRows.length > 0) {
       this.board.clearRows(completedRows);
