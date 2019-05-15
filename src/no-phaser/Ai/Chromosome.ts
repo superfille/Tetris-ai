@@ -11,8 +11,7 @@ interface Best {
 
 export default class Chromosome {
   heuristics: Heuristics;
-  _fitness: number;
-  _finalFitness: number;
+  fitness: number;
 
   constructor(heuristics: Heuristics = undefined) {
     this.heuristics = heuristics;
@@ -21,18 +20,6 @@ export default class Chromosome {
       this.heuristics = new Heuristics();
       this.heuristics.randomize();
     }
-  }
-
-  setFinalFitness(fitness: number) {
-    this._finalFitness = fitness;
-  }
-
-  finalFitness() {
-    return this._finalFitness;
-  }
-
-  fitness(): number {
-    return this._fitness;
   }
 
   mutate() {
@@ -48,19 +35,19 @@ export default class Chromosome {
   }
 
   fitnessHeight(): number {
-    return this._fitness * this.heuristics._height;
+    return this.fitness * this.heuristics._height;
   }
 
   fitnessBumpiness(): number {
-    return this._fitness * this.heuristics._bumpiness;
+    return this.fitness * this.heuristics._bumpiness;
   }
 
   fitnessCompletedLines(): number {
-    return this._fitness * this.heuristics._completedLines;
+    return this.fitness * this.heuristics._completedLines;
   }
 
   fitnessHoles(): number {
-    return this._fitness * this.heuristics._holes;
+    return this.fitness * this.heuristics._holes;
   }
 
   async playAsync() {
@@ -72,12 +59,11 @@ export default class Chromosome {
       return bestMoveShape.shape;
     }
 
-    await tetrisGame.playAsync();
-    this._fitness = tetrisGame.score;
-    return Promise.resolve();
+    const score = await tetrisGame.playAsync();
+    return Promise.resolve(score);
   }
 
-  play() {
+  play(maxNumberOfMoves: number) {
     const tetrisGame = new TetrisGame;
     tetrisGame.getNextMove = (params: any) => {
       const bestMoveShape = this.getBestMove(params.board, params.shapes, 0).shape;
@@ -85,8 +71,8 @@ export default class Chromosome {
       return bestMoveShape;
     }
 
-    tetrisGame.play();
-    this._fitness = tetrisGame.score;
+    tetrisGame.play(maxNumberOfMoves);
+    return tetrisGame.score;
   }
 
   getBestMove(board: Board, shapes: Shape[], index: number): Best {
@@ -146,6 +132,10 @@ export default class Chromosome {
     }
 
     return { shape: best, score: bestScore };
+  }
+
+  toString() {
+    return `Heuristics ${this.heuristics.toString()}`;
   }
 
 }

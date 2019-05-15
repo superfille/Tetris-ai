@@ -48,10 +48,16 @@ export default class TetrisGame {
     this.isGameOver = false
   }
 
-  play() {
-    while (!this.isGameOver) {
+  play(maxNumberOfMoves: number) {
+    for(let i = 0; i < maxNumberOfMoves; i++) {
+      if (this.isGameOver) {
+        break;
+      }
       this.update();
     }
+    // while (!this.isGameOver) {
+    //   this.update();
+    // }
     return this.score;
   }
 
@@ -125,14 +131,15 @@ export default class TetrisGame {
   }
 
   calculateScore(rowsCleared: number, level = 0) {
-    if (rowsCleared === 1) {
-      this.score += 40 * (level + 1);
-    } else if (rowsCleared === 2) {
-      this.score += 100 * (level + 1);
-    } else if (rowsCleared === 3) {
-      this.score += 300 * (level + 1);
-    } else if (rowsCleared > 3) {
-      this.score += 1200 * (level + 1);
-    }
+    this.score += rowsCleared;
+    // if (rowsCleared === 1) {
+    //   this.score += 40 * (level + 1);
+    // } else if (rowsCleared === 2) {
+    //   this.score += 100 * (level + 1);
+    // } else if (rowsCleared === 3) {
+    //   this.score += 300 * (level + 1);
+    // } else if (rowsCleared > 3) {
+    //   this.score += 1200 * (level + 1);
+    // }
   }
 }

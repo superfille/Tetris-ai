@@ -34,6 +34,9 @@ export default class Heuristic {
 
   normalize() {
     var norm = Math.sqrt(this._height * this._height + this._completedLines * this._completedLines + this._holes * this._holes + this._bumpiness * this._bumpiness);
+    if (norm === 0) {
+      return;
+    }
     this._height /= norm;
     this._completedLines /= norm;
     this._holes /= norm;
@@ -61,21 +64,22 @@ export default class Heuristic {
   }
 
   height(board: Board) {
-    let r = 0;
-    for(; r < board.row(0).length && board.isRowEmpty(r); r++);
-    return board.row(0).length - r;
+    var total = 0;
+    for(var c = 0; c < board.row(0).length; c++){
+        total += board.columnHeight(c);
+    }
+    return total;
   }
 
   completedLines(board: Board) {
     var count = 0;
-    for(var r = 0; r < board.row(0).length; r++){
+    for (var r = 0; r < board.row(0).length; r++) {
       if (board.isRowFull(r)){
         count++;
       }
     }
-    this._completedLines = count;
 
-    return this._completedLines;
+    return count;
   }
 
   holes(board: Board) {
@@ -90,8 +94,8 @@ export default class Heuristic {
         }
       }
     }
-    this._holes = count;
-    return this._holes;
+
+    return count;
   }
 
   bumpiness(board: Board) {
@@ -100,7 +104,10 @@ export default class Heuristic {
       total += Math.abs(board.columnHeight(c) - board.columnHeight(c+ 1));
     }
 
-    this._bumpiness = total;
     return total;
+  }
+
+  toString() {
+    return `${this._completedLines}, ${this._height}, ${this._holes}, ${this._bumpiness}`;
   }
 }
