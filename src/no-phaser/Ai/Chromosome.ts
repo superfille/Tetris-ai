@@ -86,10 +86,8 @@ export default class Chromosome {
   }
 
   async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
-    const clonedBoard = board.clone();
-
-    await this.holeUp(500);
-    return Promise.resolve(this.getBestMoveHelperAsync(clonedBoard, shapes, index));
+    await this.holeUp(200);
+    return Promise.resolve(this.getBestMoveHelperAsync(board.clone(), shapes, index));
   }
 
   async holeUp(ms: number) {
@@ -102,37 +100,37 @@ export default class Chromosome {
     let activeShape = shapes[index];
 
     for(let rotation = 0; rotation < activeShape.maxRotations(); rotation++) {
-        const copiedActiveShape = activeShape.clone();
-        for (let i = 0; i < rotation; i++) {
-            copiedActiveShape.rotate()
+      const copiedActiveShape = activeShape.clone(board);
+      for (let i = 0; i < rotation; i++) {
+          copiedActiveShape.rotate()
+      }
+      copiedActiveShape.allTheWayToLeft();
+
+      let direction = Directions.CURRENT;
+      while (copiedActiveShape.moveShape(direction)) {
+        const clonedShape = copiedActiveShape.clone(board);
+
+        clonedShape.autoDrop();
+
+        board.placeShape(clonedShape);
+        //board.printMe('fake');
+        //await this.holeUp(500)
+
+        let score = null;
+        if (index === (shapes.length - 1)) {
+          score = this.heuristics.score(board);
+        } else {
+          score = this.getBestMoveHelper(board, shapes, index + 1).score;
         }
-        copiedActiveShape.allTheWayToLeft();
-
-        let direction = Directions.CURRENT;
-        while (copiedActiveShape.moveShape(direction)) {
-          const clonedShape = copiedActiveShape.clone();
-
-          clonedShape.board = board;
-          clonedShape.autoDrop();
-
-          board.placeShape(clonedShape);
-          board.printMe();
-
-          let score = null;
-          if (index === (shapes.length - 1)) {
-            score = this.heuristics.score(board);
-          } else {
-            score = this.getBestMove(board, shapes, index + 1).score;
-          }
-
-          board.removeShape(clonedShape);
-          if (score > bestScore || bestScore == null){
-            bestScore = score;
-            best = copiedActiveShape.clone();
-          }
-
-          direction = Directions.RIGHT;
+        console.log(bestScore, best)
+        board.removeShape(clonedShape);
+        if (score > bestScore || bestScore === null){
+          bestScore = score;
+          best = copiedActiveShape.clone();
         }
+
+        direction = Directions.RIGHT;
+      }
     }
 
     return Promise.resolve({ shape: best, score: bestScore });
@@ -144,7 +142,7 @@ export default class Chromosome {
     let activeShape = shapes[index];
 
     for(let rotation = 0; rotation < activeShape.maxRotations(); rotation++) {
-        const copiedActiveShape = activeShape.clone();
+        const copiedActiveShape = activeShape.clone(board);
         for (let i = 0; i < rotation; i++) {
             copiedActiveShape.rotate()
         }
@@ -152,9 +150,8 @@ export default class Chromosome {
 
         let direction = Directions.CURRENT;
         while (copiedActiveShape.moveShape(direction)) {
-          const clonedShape = copiedActiveShape.clone();
+          const clonedShape = copiedActiveShape.clone(board);
 
-          clonedShape.board = board;
           clonedShape.autoDrop();
 
           board.placeShape(clonedShape);

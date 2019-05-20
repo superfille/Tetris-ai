@@ -133,12 +133,16 @@ export default class Board {
     }
   }
 
-  printMe() {
+  isGameOver() {
+    return !this.isRowEmpty(0) || !this.isRowEmpty(1);
+  }
+
+  printMe(name: string) {
     var body = document.getElementsByTagName('body')[0];
-    let tbl = document.getElementById('myTable');
+    let tbl = document.getElementById('myTable' + name);
     if (tbl === null) {
       tbl = document.createElement('table');
-      tbl.id = 'myTable';
+      tbl.id = 'myTable'  + name;
     } else {
       tbl.innerHTML = null;
     }

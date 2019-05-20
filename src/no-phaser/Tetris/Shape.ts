@@ -123,8 +123,8 @@ export default class Shape {
     return true;
   }
 
-  clone() {
-    const newShape = Object.assign(new Shape(this.board), {
+  clone(board: Board = undefined) {
+    const newShape = Object.assign(new Shape(board || this.board), {
       type: this.type,
       orientation: this.orientation,
       centerX: this.centerX,

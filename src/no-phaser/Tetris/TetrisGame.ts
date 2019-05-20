@@ -62,8 +62,13 @@ export default class TetrisGame {
   }
 
   async playAsync() {
+    let prevScore = this.score;
     while (!this.isGameOver) {
+      prevScore = this.score;
       await this.updateAsync();
+      if (prevScore !== this.score) {
+        console.log('New score ', this.score);
+      }
     }
     
     this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT)
@@ -77,22 +82,22 @@ export default class TetrisGame {
       shapes: this.shapesQueue
     });
 
-    if (!move) {
-      return;
-    }
+    move.board = this.board;
     
     this.activeShape.addMove(move.blocks);
     this.board.placeShape(this.activeShape);
     const completedRows = this.board.getCompleteRows();
 
     this.shapesQueue.forEach((shape, index) => shape.printMe(index))
-    this.board.printMe();
+    this.board.printMe('real');
 
     if (completedRows.length > 0) {
       this.board.clearRows(completedRows);
       this.calculateScore(completedRows.length);
     }
     this.updateShapesQueue();
+    
+    this.isGameOver = this.board.isGameOver();
   }
 
   update() {
@@ -131,15 +136,15 @@ export default class TetrisGame {
   }
 
   calculateScore(rowsCleared: number, level = 0) {
-    this.score += rowsCleared;
-    // if (rowsCleared === 1) {
-    //   this.score += 40 * (level + 1);
-    // } else if (rowsCleared === 2) {
-    //   this.score += 100 * (level + 1);
-    // } else if (rowsCleared === 3) {
-    //   this.score += 300 * (level + 1);
-    // } else if (rowsCleared > 3) {
-    //   this.score += 1200 * (level + 1);
-    // }
+   // this.score += rowsCleared;
+    if (rowsCleared === 1) {
+      this.score += 40 * (level + 1);
+    } else if (rowsCleared === 2) {
+      this.score += 100 * (level + 1);
+    } else if (rowsCleared === 3) {
+      this.score += 300 * (level + 1);
+    } else if (rowsCleared > 3) {
+      this.score += 1200 * (level + 1);
+    }
   }
 }
