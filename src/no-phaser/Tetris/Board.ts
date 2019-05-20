@@ -102,7 +102,7 @@ export default class Board {
   columnHeight(column: number): number {
     var r = 0;
     for(; r < this.grid.length && this.grid[r][column] === null; r++);
-    return this.grid[0].length - r;
+    return this.length - r;
   }
 
   clearRows(completedRows: number[]) {
@@ -163,6 +163,19 @@ export default class Board {
     tbl.appendChild(tbdy);
     body.appendChild(tbl)
 
+  }
+
+  isSame(otherBoard: Board) {
+    for(let row = 0; row < this.grid.length; row++) {
+      for(let column = 0; column < this.grid[0].length; column++) {
+        if (this.grid[row][column] === null && otherBoard.grid[row][column] !== null) {
+          return false;
+        } else if (this.grid[row][column] !== null && otherBoard.grid[row][column] === null) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

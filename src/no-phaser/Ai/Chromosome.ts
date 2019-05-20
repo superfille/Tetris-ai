@@ -34,20 +34,24 @@ export default class Chromosome {
     return this.heuristics;
   }
 
+  fitnessOr1(): number {
+    return this.fitness > 0 ? this.fitness : 1;
+  }
+
   fitnessHeight(): number {
-    return this.fitness * this.heuristics._height;
+    return this.fitnessOr1() * this.heuristics._height;
   }
 
   fitnessBumpiness(): number {
-    return this.fitness * this.heuristics._bumpiness;
+    return this.fitnessOr1() * this.heuristics._bumpiness;
   }
 
   fitnessCompletedLines(): number {
-    return this.fitness * this.heuristics._completedLines;
+    return this.fitnessOr1() * this.heuristics._completedLines;
   }
 
   fitnessHoles(): number {
-    return this.fitness * this.heuristics._holes;
+    return this.fitnessOr1() * this.heuristics._holes;
   }
 
   async playAsync() {
@@ -85,11 +89,53 @@ export default class Chromosome {
     const clonedBoard = board.clone();
 
     await this.holeUp(500);
-    return Promise.resolve(this.getBestMoveHelper(clonedBoard, shapes, index));
+    return Promise.resolve(this.getBestMoveHelperAsync(clonedBoard, shapes, index));
   }
 
   async holeUp(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async getBestMoveHelperAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
+    let best = null;
+    let bestScore = null;
+    let activeShape = shapes[index];
+
+    for(let rotation = 0; rotation < activeShape.maxRotations(); rotation++) {
+        const copiedActiveShape = activeShape.clone();
+        for (let i = 0; i < rotation; i++) {
+            copiedActiveShape.rotate()
+        }
+        copiedActiveShape.allTheWayToLeft();
+
+        let direction = Directions.CURRENT;
+        while (copiedActiveShape.moveShape(direction)) {
+          const clonedShape = copiedActiveShape.clone();
+
+          clonedShape.board = board;
+          clonedShape.autoDrop();
+
+          board.placeShape(clonedShape);
+          board.printMe();
+
+          let score = null;
+          if (index === (shapes.length - 1)) {
+            score = this.heuristics.score(board);
+          } else {
+            score = this.getBestMove(board, shapes, index + 1).score;
+          }
+
+          board.removeShape(clonedShape);
+          if (score > bestScore || bestScore == null){
+            bestScore = score;
+            best = copiedActiveShape.clone();
+          }
+
+          direction = Directions.RIGHT;
+        }
+    }
+
+    return Promise.resolve({ shape: best, score: bestScore });
   }
 
   getBestMoveHelper(board: Board, shapes: Shape[], index: number): Best {
@@ -97,37 +143,36 @@ export default class Chromosome {
     let bestScore = null;
     let activeShape = shapes[index];
 
-    for(let rotation = 0; rotation < 4; rotation++){
+    for(let rotation = 0; rotation < activeShape.maxRotations(); rotation++) {
         const copiedActiveShape = activeShape.clone();
-        for(let i = 0; i < rotation; i++){
+        for (let i = 0; i < rotation; i++) {
             copiedActiveShape.rotate()
         }
-        copiedActiveShape.allTheWayToLeft()
-        
+        copiedActiveShape.allTheWayToLeft();
+
         let direction = Directions.CURRENT;
-        while(copiedActiveShape.moveShape(direction)){
-            const clonedShape = copiedActiveShape.clone();
-            
-            const clonedBoard = board.clone();
-            clonedShape.board = clonedBoard;
-            clonedShape.autoDrop();
-            
- 
-            clonedBoard.placeShape(clonedShape);
+        while (copiedActiveShape.moveShape(direction)) {
+          const clonedShape = copiedActiveShape.clone();
 
-            let score = null;
-            if (index === (shapes.length - 1)) {
-              score = this.heuristics.score(clonedBoard);
-            } else {
-              score = this.getBestMove(clonedBoard, shapes, index + 1).score;
-            }
-            
-            if (score > bestScore || bestScore == null){
-              bestScore = score;
-              best = copiedActiveShape.clone();
-            }
+          clonedShape.board = board;
+          clonedShape.autoDrop();
 
-            direction = Directions.RIGHT;
+          board.placeShape(clonedShape);
+
+          let score = null;
+          if (index === (shapes.length - 1)) {
+            score = this.heuristics.score(board);
+          } else {
+            score = this.getBestMove(board, shapes, index + 1).score;
+          }
+
+          board.removeShape(clonedShape);
+          if (score > bestScore || bestScore == null){
+            bestScore = score;
+            best = copiedActiveShape.clone();
+          }
+
+          direction = Directions.RIGHT;
         }
     }
 

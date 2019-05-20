@@ -26,7 +26,7 @@ export default class Genetic {
     }
   }
 
-  tournamentSelection(candidates: Chromosome[], ways: number){
+  tournamentSelection(candidates: Chromosome[], ways: number) {
     const indices = Array.apply(null, {length: candidates.length})
       .map(Number.call, Number);
 
@@ -53,20 +53,21 @@ export default class Genetic {
 
   computeFitnesses(population: Chromosome[], numberOfGames: number, maxNumberOfMoves: number) {
     for (let i = 0; i < population.length; i++) {
-      const candidate: Chromosome = population[i];
       let totalScore = 0;
       for (let j = 0; j < numberOfGames; j++) {
-        totalScore += candidate.play(maxNumberOfMoves);
+        // console.time('starting');
+        totalScore += population[i].play(maxNumberOfMoves);
+        // console.timeEnd('starting')
       }
-      candidate.fitness = totalScore;
-      console.log('Final fitness of a chromosome', candidate.fitness);
-      console.log(candidate.toString());
+      population[i].fitness = totalScore;
     }
-}
+  }
+
   async playAsync() {
     this.population = [];
     this.initializePopulation(this.population, 10);
     this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
+
     try {
       await this.population[0].playAsync();
       console.log('Fitness: ', this.population[0].fitness);
@@ -84,11 +85,13 @@ export default class Genetic {
     this.computeFitnesses(this.population, 5, 200);
     this.sortPopulation(this.population);
 
-    console.log('Best: ', this.bestCandidate(this.population).toString());
+    console.log('Fittest candidate = ', this.population[0].toString());
+    console.log(`Score = ${this.population[0].fitness}`);
+
     var count = 0;
-    while (true) {
+    while (count < 50) {
       var newCandidates = [];
-      for(var i = 0; i < 3; i++) {
+      for (var i = 0; i < 30; i++) {
         var pair = this.tournamentSelection(this.population, 2);
         var candidate = this.crossover(pair[0], pair[1]);
         if (Math.random() < 0.05) {
@@ -97,22 +100,16 @@ export default class Genetic {
         candidate.normalize()
         newCandidates.push(candidate);
       }
+
       console.log('Computing fitnesses of new candidates. (' + count + ')');
-      console.log('Best: ', this.bestCandidate(this.population).toString());
       this.computeFitnesses(newCandidates, 5, 200);
       this.deleteNLastReplacement(this.population, newCandidates);
-      const totalFitness = this.population.reduce((prev, acc) => prev + acc.fitness, 0);
       
-      console.log('Average fitness = ' + (totalFitness / this.population.length));
-      console.log('Highest fitness = ' + this.population[0].fitness + '(' + count + ')');
-      console.log('Fittest candidate = ' + JSON.stringify(this.population[0]) + '(' + count + ')');
+      console.log(`Fittest candidate = ${this.population[0].toString()}`);
+      console.log(`Score = ${this.population[0].fitness}`);
       count++;
     }
-  }
 
-  bestCandidate(population: Chromosome[]): Chromosome {
-    return population.reduce((prev, current) => {
-      return current.fitness > prev.fitness ? current : prev;
-    }, { fitness: 0, toString: () => 'hejsan' } as Chromosome)
+    console.log('Done')
   }
 }

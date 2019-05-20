@@ -4,9 +4,9 @@ import Genetic from "./no-phaser/Ai/Genetic";
 
 const geneticAlgorithm: Genetic = new Genetic;
 
-// geneticAlgorithm.playAsync();
+geneticAlgorithm.playAsync();
 
-geneticAlgorithm.play();
+// geneticAlgorithm.play();
 
 
 // const tetris: Tetris = new Tetris();

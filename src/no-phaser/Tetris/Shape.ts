@@ -101,15 +101,16 @@ export default class Shape {
       const newY = this.centerY +
         this.tetrisShape.orientation[newOrientation].blockPosition[i].y;      
       
-      return !this.board.isOnBoard({ row: newX, column: newY }) ||
-        this.board.isOccupied({ row: newX, column: newY });
+      const isOnBoard = this.board.isOnBoard({ row: newX, column: newY });
+      const isOccupied = this.board.isOccupied({ row: newX, column: newY });
+      return isOnBoard && !isOccupied;
     });
   }
     
   rotate() {
-    if(!this.canRotate()) {
-      return false;
-    }
+    // if(!this.canRotate()) {
+    //   return false;
+    // }
     
     const newOrientation = (this.orientation + 1) % ShapeStuff.NUM_ORIENTATIONS;
     this.blocks.forEach((block, i) => {
@@ -283,5 +284,22 @@ export default class Shape {
       tr.appendChild(td)
     }
     tableBody.appendChild(tr);
+  }
+
+  maxRotations(): number {
+    switch(this.blocks[0].type) {
+      case Tetrimino.I:
+        return 2;
+      case Tetrimino.J:
+      case Tetrimino.L:
+        return 4;
+      case Tetrimino.O:
+        return 1;
+      case Tetrimino.S:
+      case Tetrimino.Z:
+        return 2;
+      case Tetrimino.T:
+        return 4;
+    }
   }
 }

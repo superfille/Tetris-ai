@@ -1,5 +1,5 @@
 import Board from "../Tetris/Board";
-import { randomNumber } from "../../Utils";
+import { randomNumber, randomInteger } from "../../Utils";
 
 export default class Heuristic {
   _completedLines: number;
@@ -44,22 +44,20 @@ export default class Heuristic {
   }
 
   mutate() {
-    if (Math.random() <= 0.05) {
-      const toAdd = randomNumber(-0.2, 0.2);
-      switch(randomNumber(0, 3)) {
-        case 0:
-          this._completedLines += toAdd;
-          break;
-        case 1:
-          this._height += toAdd;
-          break;
-        case 2:
-          this._holes += toAdd;
-          break;
-        case 3:
-          this._bumpiness += toAdd;
-          break;
-      }
+    var quantity = Math.random() * 0.4 - 0.2;
+    switch(randomInteger(0, 4)) {
+      case 0:
+        this._completedLines += quantity;
+        break;
+      case 1:
+        this._height += quantity;
+        break;
+      case 2:
+        this._holes += quantity;
+        break;
+      case 3:
+        this._bumpiness += quantity;
+        break;
     }
   }
 
@@ -78,7 +76,7 @@ export default class Heuristic {
         count++;
       }
     }
-
+    
     return count;
   }
 
@@ -86,10 +84,10 @@ export default class Heuristic {
     let count = 0
     for(var c = 0; c < board.row(0).length; c++){
       var block = false;
-      for(var r = 0; r < board.length; r++){
+      for(var r = 0; r < board.grid.length; r++){
         if (board.grid[r][c] !== null) {
             block = true;
-        }else if (board.grid[r][c] === null && block){
+        } else if (board.grid[r][c] === null && block){
           count++;
         }
       }
@@ -101,7 +99,7 @@ export default class Heuristic {
   bumpiness(board: Board) {
     let total = 0;
     for(var c = 0; c < board.row(0).length - 1; c++){
-      total += Math.abs(board.columnHeight(c) - board.columnHeight(c+ 1));
+      total += Math.abs(board.columnHeight(c) - board.columnHeight(c + 1));
     }
 
     return total;
