@@ -1,6 +1,6 @@
 import Board from "./Board";
 import Shape from "./Shape";
-import { Directions } from "../../static_numbers";
+import { Directions } from "../Static_numbers";
 import shapesJson from '../../../assets/shapes.json';
 
 export default class TetrisGame {
@@ -12,7 +12,7 @@ export default class TetrisGame {
   isGameOver: boolean;
 
   constructor() {
-      this.board = new Board(true);
+      this.board = new Board();
       this.shapesQueue = [];
       this.score = 0;
       this.activeShape;
@@ -41,7 +41,7 @@ export default class TetrisGame {
   }
 
   clear() {
-    this.board = new Board(true);
+    this.board = new Board();
     this.shapesQueue = [];
     this.score = 0;
     this.activeShape;

@@ -1,6 +1,6 @@
 import Chromosome from "./Chromosome";
 import Heuristic from "./Heuristics";
-import { randomInteger } from "../../Utils";
+import { randomInteger } from "../Utils";
 
 export default class Genetic {
   population: Chromosome[];

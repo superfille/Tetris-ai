@@ -1,4 +1,4 @@
-import { Directions } from "../../static_numbers";
+import { Directions } from "../Static_numbers";
 import Heuristics from './Heuristics';
 import Board from "../Tetris/Board";
 import Shape from "../Tetris/Shape";

@@ -1,5 +1,5 @@
 import Board from "../Tetris/Board";
-import { randomNumber, randomInteger } from "../../Utils";
+import { randomNumber, randomInteger } from "../Utils";
 
 export default class Heuristic {
   _completedLines: number;

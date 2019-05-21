@@ -1,4 +1,4 @@
-import { Tetrimino, getColor } from "../../static_numbers";
+import { Tetrimino, getColor } from "../Static_numbers";
 
 export default class Block {
   row: number;

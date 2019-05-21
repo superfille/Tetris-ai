@@ -1,11 +1,11 @@
 import Block from "./Block";
 import Shape from "./Shape";
-import { BoardDimension, Directions } from '../../static_numbers';
+import { BoardDimension, Directions } from '../Static_numbers';
 
 export default class Board {
   grid: Block[][];
 
-  constructor(init = false) {
+  constructor() {
     this.init();
   }
 

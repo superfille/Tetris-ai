@@ -1,6 +1,6 @@
 import Block from "./Block";
 import Board from "./Board";
-import { ShapeStuff, Directions, Tetrimino } from '../../static_numbers';
+import { ShapeStuff, Directions, Tetrimino } from '../Static_numbers';
 
 export default class Shape {
   centerX: number;
