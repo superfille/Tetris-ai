@@ -17,7 +17,7 @@ export default class Genetic {
   }
 
   sortPopulation(population: Chromosome[]) {
-    population.sort((a, b) => a.fitness - b.fitness);
+    population.sort((a, b) => b.fitness - a.fitness);
   }
 
   initializePopulation(population: Chromosome[], amount: number) {
@@ -55,9 +55,7 @@ export default class Genetic {
     for (let i = 0; i < population.length; i++) {
       let totalScore = 0;
       for (let j = 0; j < numberOfGames; j++) {
-        // console.time('starting');
         totalScore += population[i].play(maxNumberOfMoves);
-        // console.timeEnd('starting')
       }
       population[i].fitness = totalScore;
     }
@@ -66,6 +64,7 @@ export default class Genetic {
   async playAsync() {
     this.population = [];
     this.initializePopulation(this.population, 10);
+    // this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.411019, height: 0.853031, holes: -0.264154, bumpiness: 0.183366 }));
     this.population[0] = new Chromosome(new Heuristic({ completedLines: 0.760666, height: 0.510066, holes: 0.35663, bumpiness: 0.184483 }));
 
     try {
@@ -79,7 +78,7 @@ export default class Genetic {
   play() {
     // Initial population generation
     this.population = [];
-    this.initializePopulation(this.population, 10);
+    this.initializePopulation(this.population, 50);
     console.log('Computing fitnesses of initial population...');
 
     this.computeFitnesses(this.population, 5, 200);
@@ -91,8 +90,8 @@ export default class Genetic {
     var count = 0;
     while (count < 50) {
       var newCandidates = [];
-      for (var i = 0; i < 30; i++) {
-        var pair = this.tournamentSelection(this.population, 2);
+      for (var i = 0; i < 10; i++) {
+        var pair = this.tournamentSelection(this.population, 10);
         var candidate = this.crossover(pair[0], pair[1]);
         if (Math.random() < 0.05) {
             candidate.mutate();

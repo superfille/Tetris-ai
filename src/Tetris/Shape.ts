@@ -1,6 +1,6 @@
 import Block from "./Block";
 import Board from "./Board";
-import { ShapeStuff, Directions, Tetrimino } from '../Static_numbers';
+import { ShapeStuff, Directions, Tetrimino } from '../Constants';
 
 export default class Shape {
   centerX: number;
@@ -41,6 +41,10 @@ export default class Shape {
   
   allTheWayToLeft() {
     while (this.moveShape(Directions.LEFT));    
+  }
+
+  canMoveShape(direction: Directions): boolean {
+    return this.board.canMoveShape(this.blocks, direction);
   }
 
   moveShape(direction: Directions): boolean {

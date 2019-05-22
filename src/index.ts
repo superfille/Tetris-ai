@@ -5,6 +5,6 @@ const geneticAlgorithm: Genetic = new Genetic;
 
 geneticAlgorithm.playAsync();
 
-// geneticAlgorithm.play();
+//geneticAlgorithm.play();
 
 

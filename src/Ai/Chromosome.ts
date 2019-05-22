@@ -1,4 +1,4 @@
-import { Directions } from "../Static_numbers";
+import { Directions } from "../Constants";
 import Heuristics from './Heuristics';
 import Board from "../Tetris/Board";
 import Shape from "../Tetris/Shape";
@@ -86,7 +86,7 @@ export default class Chromosome {
   }
 
   async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
-    await this.holeUp(200);
+    await this.holeUp(50);
     return Promise.resolve(this.getBestMoveHelperAsync(board.clone(), shapes, index));
   }
 
@@ -108,7 +108,7 @@ export default class Chromosome {
 
       let direction = Directions.CURRENT;
       while (copiedActiveShape.moveShape(direction)) {
-        const clonedShape = copiedActiveShape.clone(board);
+        const clonedShape: Shape = copiedActiveShape.clone(board);
 
         clonedShape.autoDrop();
 
@@ -122,7 +122,7 @@ export default class Chromosome {
         } else {
           score = this.getBestMoveHelper(board, shapes, index + 1).score;
         }
-        console.log(bestScore, best)
+        
         board.removeShape(clonedShape);
         if (score > bestScore || bestScore === null){
           bestScore = score;
@@ -164,7 +164,7 @@ export default class Chromosome {
           }
 
           board.removeShape(clonedShape);
-          if (score > bestScore || bestScore == null){
+          if (score > bestScore || bestScore == null) {
             bestScore = score;
             best = copiedActiveShape.clone();
           }

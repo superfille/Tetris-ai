@@ -1,6 +1,6 @@
 import Block from "./Block";
 import Shape from "./Shape";
-import { BoardDimension, Directions } from '../Static_numbers';
+import { BoardDimension, Directions } from '../Constants';
 
 export default class Board {
   grid: Block[][];
@@ -28,8 +28,12 @@ export default class Board {
     return newBoard;
   }
 
-  get length(): number {
-    return this.grid.length;
+  get rowLength(): number {
+    return BoardDimension.BOARD_ROWS;
+  }
+
+  get columnLength(): number {
+    return BoardDimension.BOARD_COLUMNS;
   }
 
   row(row: number): Block[] {
@@ -101,8 +105,8 @@ export default class Board {
 
   columnHeight(column: number): number {
     var r = 0;
-    for(; r < this.grid.length && this.grid[r][column] === null; r++);
-    return this.length - r;
+    for(; r < this.rowLength && this.grid[r][column] === null; r++);
+    return this.rowLength - r;
   }
 
   clearRows(completedRows: number[]) {
@@ -131,10 +135,6 @@ export default class Board {
         }
       }
     }
-  }
-
-  isGameOver() {
-    return !this.isRowEmpty(0) || !this.isRowEmpty(1);
   }
 
   printMe(name: string) {
@@ -167,19 +167,6 @@ export default class Board {
     tbl.appendChild(tbdy);
     body.appendChild(tbl)
 
-  }
-
-  isSame(otherBoard: Board) {
-    for(let row = 0; row < this.grid.length; row++) {
-      for(let column = 0; column < this.grid[0].length; column++) {
-        if (this.grid[row][column] === null && otherBoard.grid[row][column] !== null) {
-          return false;
-        } else if (this.grid[row][column] !== null && otherBoard.grid[row][column] === null) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
 }

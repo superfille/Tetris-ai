@@ -63,7 +63,7 @@ export default class Heuristic {
 
   height(board: Board) {
     var total = 0;
-    for(var c = 0; c < board.row(0).length; c++){
+    for(var c = 0; c < board.columnLength; c++){
         total += board.columnHeight(c);
     }
     return total;
@@ -71,7 +71,7 @@ export default class Heuristic {
 
   completedLines(board: Board) {
     var count = 0;
-    for (var r = 0; r < board.row(0).length; r++) {
+    for (var r = 0; r < board.rowLength; r++) {
       if (board.isRowFull(r)){
         count++;
       }
@@ -82,9 +82,9 @@ export default class Heuristic {
 
   holes(board: Board) {
     let count = 0
-    for(var c = 0; c < board.row(0).length; c++){
+    for(var c = 0; c < board.columnLength; c++) {
       var block = false;
-      for(var r = 0; r < board.grid.length; r++){
+      for(var r = 0; r < board.rowLength; r++) {
         if (board.grid[r][c] !== null) {
             block = true;
         } else if (board.grid[r][c] === null && block){
@@ -92,13 +92,12 @@ export default class Heuristic {
         }
       }
     }
-
     return count;
   }
 
   bumpiness(board: Board) {
     let total = 0;
-    for(var c = 0; c < board.row(0).length - 1; c++){
+    for(var c = 0; c < board.columnLength - 1; c++) {
       total += Math.abs(board.columnHeight(c) - board.columnHeight(c + 1));
     }
 

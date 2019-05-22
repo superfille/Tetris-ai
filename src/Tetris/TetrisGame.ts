@@ -1,7 +1,7 @@
 import Board from "./Board";
 import Shape from "./Shape";
-import { Directions } from "../Static_numbers";
-import shapesJson from '../../../assets/shapes.json';
+import { Directions } from "../Constants";
+import shapesJson from '../../assets/shapes.json';
 
 export default class TetrisGame {
   shapes: [];
@@ -96,8 +96,6 @@ export default class TetrisGame {
       this.calculateScore(completedRows.length);
     }
     this.updateShapesQueue();
-    
-    this.isGameOver = this.board.isGameOver();
   }
 
   update() {
@@ -122,6 +120,7 @@ export default class TetrisGame {
       this.calculateScore(completedRows.length);
     }
     this.updateShapesQueue();
+
   }
 
   updateShapesQueue() {
@@ -130,21 +129,20 @@ export default class TetrisGame {
     this.shapesQueue.shift();
     this.shapesQueue.push(newShape);
     this.activeShape = this.shapesQueue[0];
-    if (!this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT)) {
-      this.isGameOver = true;
-    }
+
+    this.isGameOver = !this.activeShape.canMoveShape(Directions.CURRENT);
   }
 
   calculateScore(rowsCleared: number, level = 0) {
-   // this.score += rowsCleared;
-    if (rowsCleared === 1) {
-      this.score += 40 * (level + 1);
-    } else if (rowsCleared === 2) {
-      this.score += 100 * (level + 1);
-    } else if (rowsCleared === 3) {
-      this.score += 300 * (level + 1);
-    } else if (rowsCleared > 3) {
-      this.score += 1200 * (level + 1);
-    }
+    this.score += rowsCleared;
+    // if (rowsCleared === 1) {
+    //   this.score += 40 * (level + 1);
+    // } else if (rowsCleared === 2) {
+    //   this.score += 100 * (level + 1);
+    // } else if (rowsCleared === 3) {
+    //   this.score += 300 * (level + 1);
+    // } else if (rowsCleared > 3) {
+    //   this.score += 1200 * (level + 1);
+    // }
   }
 }

@@ -1,8 +1,4 @@
 
-const BANNER_HEIGHT = 145;
-const LINING_WIDTH = 5;
-const BLOCK_WIDTH = 50;
-
 // Board Size
 const BoardDimension = {
   BOARD_COLUMNS: 10,
@@ -76,7 +72,6 @@ const getColor = (shapeType: Tetrimino): string => {
 
 
 export {
-  BANNER_HEIGHT, LINING_WIDTH, BLOCK_WIDTH,
   BoardDimension, Directions, Colors, ScreenDimension, ShapeStuff,
   getColor, Tetrimino
 }
