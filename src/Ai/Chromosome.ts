@@ -3,6 +3,7 @@ import Heuristics from './Heuristics';
 import Board from "../Tetris/Board";
 import Shape from "../Tetris/Shape";
 import TetrisGame from "../Tetris/TetrisGame";
+import { holeUp } from "../Utils";
 
 interface Best {
   shape: Shape;
@@ -54,19 +55,6 @@ export default class Chromosome {
     return this.fitnessOr1() * this.heuristics._holes;
   }
 
-  async playAsync() {
-    const tetrisGame = new TetrisGame;
-
-    tetrisGame.getNextMoveAsync = async (params: any) => {
-      const bestMoveShape = await this.getBestMoveAsync(params.board, params.shapes, 0);
-      bestMoveShape.shape.autoDrop();
-      return bestMoveShape.shape;
-    }
-
-    const score = await tetrisGame.playAsync();
-    return Promise.resolve(score);
-  }
-
   play(maxNumberOfMoves: number) {
     const tetrisGame = new TetrisGame;
     tetrisGame.getNextMove = (params: any) => {
@@ -85,13 +73,22 @@ export default class Chromosome {
     return this.getBestMoveHelper(clonedBoard, shapes, index);
   }
 
-  async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
-    await this.holeUp(50);
-    return Promise.resolve(this.getBestMoveHelperAsync(board.clone(), shapes, index));
+  async playAsync() {
+    const tetrisGame = new TetrisGame;
+
+    tetrisGame.getNextMoveAsync = async (params: any) => {
+      const bestMoveShape = await this.getBestMoveAsync(params.board, params.shapes, 0);
+      bestMoveShape.shape.autoDrop();
+      return bestMoveShape.shape;
+    }
+
+    const score = await tetrisGame.playAsync();
+    return Promise.resolve(score);
   }
 
-  async holeUp(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  async getBestMoveAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
+    
+    return Promise.resolve(this.getBestMoveHelperAsync(board.clone(), shapes, index));
   }
 
   async getBestMoveHelperAsync(board: Board, shapes: Shape[], index: number): Promise<Best> {
@@ -107,14 +104,19 @@ export default class Chromosome {
       copiedActiveShape.allTheWayToLeft();
 
       let direction = Directions.CURRENT;
+      if (!copiedActiveShape.moveShape(direction)) {
+        board.placeShape(copiedActiveShape);
+        board.printMe('fake');
+        board.removeShape(copiedActiveShape);
+      }
       while (copiedActiveShape.moveShape(direction)) {
         const clonedShape: Shape = copiedActiveShape.clone(board);
 
         clonedShape.autoDrop();
 
         board.placeShape(clonedShape);
-        //board.printMe('fake');
-        //await this.holeUp(500)
+        board.printMe('fake');
+        await holeUp(200)
 
         let score = null;
         if (index === (shapes.length - 1)) {

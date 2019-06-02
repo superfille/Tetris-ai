@@ -79,7 +79,7 @@ export default class Board {
   canMoveShape(blocks: Block[], direction: Directions): boolean {
     return blocks.every(block => {
       const position = this.moveLogic(block, direction);
-      return this.isOnBoard(position) && !this.isOccupied(position)
+      return this.isOnBoard(position) && !this.isOccupied(position);
     });
   }
 

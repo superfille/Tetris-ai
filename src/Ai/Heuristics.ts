@@ -1,5 +1,5 @@
 import Board from "../Tetris/Board";
-import { randomNumber, randomInteger } from "../Utils";
+import { randomInteger } from "../Utils";
 
 export default class Heuristic {
   _completedLines: number;
@@ -26,10 +26,19 @@ export default class Heuristic {
   }
 
   score(board: Board) {
-    return -(this._height * this.height(board))
-      + (this._completedLines * this.completedLines(board))
-      - (this._holes * this.holes(board))
-      - (this._bumpiness * this.bumpiness(board));
+    const height = this.height(board);
+    const completedLines = this.completedLines(board);
+    const holes = this.holes(board);
+    const bumpiness = this.bumpiness(board);
+
+    console.log(`height: ${height}, lines: ${completedLines}, holes: ${holes}, bump: ${bumpiness}`);
+    
+    const score = -this._height * height
+      + this._completedLines * completedLines
+      - this._holes * holes
+      - this._bumpiness * bumpiness;
+    console.log(`score: ${score}`);
+    return score;
   }
 
   normalize() {

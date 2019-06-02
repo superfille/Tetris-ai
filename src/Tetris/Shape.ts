@@ -16,12 +16,13 @@ export default class Shape {
     this.centerY = null;
     this.tetrisShape = null;
     this.blocks = [];
-    this.type = Math.floor(Math.random() * ShapeStuff.NUM_SHAPE_TYPES);
-    this.orientation = Math.floor(Math.random() * ShapeStuff.NUM_ORIENTATIONS);
+    // this.type = Math.floor(Math.random() * ShapeStuff.NUM_SHAPE_TYPES);
+    this.orientation = 0; //Math.floor(Math.random() * ShapeStuff.NUM_ORIENTATIONS);
     this.board = board;
   }
   
-  init(shapes: any) {
+  init(shapes: any, type: number) {
+    this.type = type;
     this.tetrisShape = shapes[this.type];
     this.centerX = this.tetrisShape.orientation[this.orientation].startingLocation.x;
     this.centerY = this.tetrisShape.orientation[this.orientation].startingLocation.y;

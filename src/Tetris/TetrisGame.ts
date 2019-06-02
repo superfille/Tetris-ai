@@ -2,6 +2,9 @@ import Board from "./Board";
 import Shape from "./Shape";
 import { Directions } from "../Constants";
 import shapesJson from '../../assets/shapes.json';
+import shapesJsonAi from '../../assets/ai-shapes.json';
+import { RandomPieceGenerator } from "./RandomPice";
+import { holeUp } from "../Utils";
 
 export default class TetrisGame {
   shapes: [];
@@ -10,22 +13,30 @@ export default class TetrisGame {
   score: number;
   activeShape: Shape;
   isGameOver: boolean;
+  randomGenerator: RandomPieceGenerator;
+  stopped: boolean = false;
 
   constructor() {
-      this.board = new Board();
-      this.shapesQueue = [];
-      this.score = 0;
-      this.activeShape;
-      this.isGameOver = false
-      this.shapes = shapesJson.shapes;
-      
-      this.initShapesQueue();
+    this.randomGenerator = new RandomPieceGenerator();
+    this.board = new Board();
+    this.shapesQueue = [];
+    this.score = 0;
+    this.activeShape;
+    this.isGameOver = false
+    this.shapes = shapesJson.shapes;
+    // this.shapes = shapesJsonAi.shapes;
+    this.initShapesQueue();
+
+    window.addEventListener('keyup', (event) => {
+      this.stopped = event.which === 83 ? !this.stopped : this.stopped;
+    })
   }
 
   initShapesQueue() {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 1; i++) {
       const shape = new Shape(this.board);
-      shape.init(this.shapes);
+      //shape.init(this.shapes, this.randomGenerator.nextPiece());
+      shape.init(this.shapes, 6);
       this.shapesQueue.push(shape);
     }
     this.activeShape = this.shapesQueue[0];
@@ -71,7 +82,7 @@ export default class TetrisGame {
       }
     }
     
-    this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT)
+   // this.board.canMoveShape(this.activeShape.blocks, Directions.CURRENT);
     return this.score;
   }
 
@@ -81,7 +92,6 @@ export default class TetrisGame {
       activeShape: this.activeShape,
       shapes: this.shapesQueue
     });
-
     move.board = this.board;
     
     this.activeShape.addMove(move.blocks);
@@ -89,13 +99,16 @@ export default class TetrisGame {
     const completedRows = this.board.getCompleteRows();
 
     this.shapesQueue.forEach((shape, index) => shape.printMe(index))
-    this.board.printMe('real');
+    //this.board.printMe('real');
 
     if (completedRows.length > 0) {
+      this.board.printMe('fake')
+      await holeUp(2000);
       this.board.clearRows(completedRows);
       this.calculateScore(completedRows.length);
     }
     this.updateShapesQueue();
+    // this.isGameOver = true;
   }
 
   update() {
@@ -125,7 +138,8 @@ export default class TetrisGame {
 
   updateShapesQueue() {
     const newShape = new Shape(this.board);
-    newShape.init(this.shapes);
+    // newShape.init(this.shapes, this.randomGenerator.nextPiece());
+    newShape.init(this.shapes, 2);
     this.shapesQueue.shift();
     this.shapesQueue.push(newShape);
     this.activeShape = this.shapesQueue[0];

@@ -2,7 +2,7 @@
 // Board Size
 const BoardDimension = {
   BOARD_COLUMNS: 10,
-  BOARD_ROWS: 16
+  BOARD_ROWS: 20
 }
 
 // Movement Directions
