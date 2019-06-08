@@ -33,6 +33,13 @@ export class Board {
           && position.column < BoardDimension.COLUMNS
   }
   
+  isWithinBoard(position: Position) {
+    return   position.row >= 0
+          && position.column >= 0 
+          && position.row < BoardDimension.ROWS  
+          && position.column < BoardDimension.COLUMNS
+  }
+
   isOccupied(position: Position): boolean {
     if (position.row < 0) {
       return false;
@@ -47,6 +54,13 @@ export class Board {
     return newPositions.every(pos => {
       return this.isOnBoard(pos) && !this.isOccupied(pos);
     });
+  }
+
+  isGameOver(shape: Shape): boolean {
+    const clonedShape = shape.clone();
+    this.moveShapeAlltheWayTo(clonedShape, Directions.DOWN)
+    
+    return clonedShape.positions.every(p => !this.isWithinBoard(p));
   }
 
   canRotate(shape: Shape): boolean {
@@ -106,7 +120,7 @@ export class Board {
 
   moveShapeAlltheWayTo(shape: Shape, direction: Directions) {
     while (this.canMove(shape, direction)) {
-      shape.move(Directions.DOWN);
+      shape.move(direction);
     }
   }
 

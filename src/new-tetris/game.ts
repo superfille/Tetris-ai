@@ -8,14 +8,19 @@ export class Game {
   activeShape: Shape;
   nextMove: Directions = Directions.DOWN;
   randomGenerator: RandomPieceGenerator;
+  gameOver: boolean = false;
+  ai: any;
+  points: number = 0;
 
-  
   constructor(ai: boolean) {
     this.randomGenerator = new RandomPieceGenerator;
-    this.nextTetrimino();
     this.board = new Board();
+    this.nextTetrimino();
     this.initKeys();
-    this.loop();
+
+    if (!ai) {
+      this.loop();
+    }
   }
 
   initKeys() {
@@ -39,6 +44,7 @@ export class Game {
 
   nextTetrimino() {
     this.activeShape = new Shape(this.randomGenerator.nextPiece());
+    this.gameOver = this.board.isGameOver(this.activeShape);
   }
 
   handleMovingTetrimino(direction: Directions): boolean {    
@@ -65,9 +71,13 @@ export class Game {
   }
 
   loop() {
-    setInterval(() => {
+    const interval = setInterval(() => {
       if (!this.handleMovingTetrimino(Directions.DOWN)) {
         this.nextTetrimino();
+        if (this.gameOver) {
+          clearInterval(interval);
+          alert('done');
+        }
       }
       const rows = this.board.getCompleteRows();
       if (rows.length > 0) {
@@ -76,7 +86,17 @@ export class Game {
     }, 500);
   }
 
-  aiLoop() {
+  aiMove(shape: Shape) {
+    this.board.moveShapeAlltheWayTo(shape, Directions.DOWN)
+    this.board.addShape(shape);
 
+    const rows = this.board.getCompleteRows();
+    if (rows.length > 0) {
+      this.points += rows.length;
+      this.board.clearRows(rows);
+      console.log(this.points);
+    }
+    this.board.printMe('lol');
+    this.nextTetrimino();
   }
 }

@@ -1,13 +1,9 @@
-import Genetic from "./Ai/Genetic";
-import { Tetriminos } from "./new-tetris/constants";
-import { Game } from "./new-tetris/game";
+import Chromosome from "./new-ai/chromosome";
+import Heuristic from "./new-ai/heuristics";
 
-// const geneticAlgorithm: Genetic = new Genetic;
+const heu: Heuristic = new Heuristic({ height: 0.510066, completedLines: 0.760666, holes: 0.35663, bumpiness: 0.184483 });
+const chromo = new Chromosome(heu);
 
-// geneticAlgorithm.playAsync({ height: 0.510066, completedLines: 0.760666, holes: 0.35663, bumpiness: 0.184483 });
+chromo.play(0, 0).then(console.log)
 
-// // geneticAlgorithm.play();
-// @ts-ignore
-
-
-const game = new Game();
+// const game = new Game(false);
