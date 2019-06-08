@@ -1,5 +1,5 @@
 import { Position } from './position';
-import { Directions, Tetriminos } from '../constants';
+import { Directions, Tetriminos } from '../../constants';
 import { cloneDeep } from 'lodash';
 import * as Shapes from './shapes';
 

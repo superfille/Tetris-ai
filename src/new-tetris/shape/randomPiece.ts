@@ -1,4 +1,4 @@
-import { Tetriminos } from "../constants";
+import { Tetriminos } from "../../constants";
 
 export class RandomPieceGenerator {
   bag: number[];

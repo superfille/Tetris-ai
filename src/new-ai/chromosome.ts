@@ -3,7 +3,7 @@ import { Board } from "../new-tetris/Board";
 import { Shape } from "../new-tetris/shape/Shape";
 import { Game } from '../new-tetris/game';
 import { wait } from "../utils";
-import { Directions } from 'src/new-tetris/constants';
+import { Directions } from '../constants';
 
 interface Best {
   shape: Shape;

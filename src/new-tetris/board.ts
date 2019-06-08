@@ -1,4 +1,4 @@
-import { BoardDimension, Directions } from "./constants";
+import { BoardDimension, Directions } from "../constants";
 import { Position } from "./shape/position";
 import { Shape } from "./shape/shape";
 

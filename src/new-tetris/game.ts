@@ -1,5 +1,5 @@
 import { Board } from "./board";
-import { Directions } from "./constants";
+import { Directions } from "../constants";
 import { RandomPieceGenerator } from "./shape/randomPiece";
 import { Shape } from "./shape/shape";
 
